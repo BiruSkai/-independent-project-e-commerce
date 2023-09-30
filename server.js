@@ -1,19 +1,33 @@
 const express = require("express");
 const app = express();
-
-// Establishing cors middleware
 const cors = require("cors");
-app.use(cors());
-
-// Parse application/json 
 const bodyParser = require("body-parser");
-app.use(bodyParser.json());
+require('dotenv').config();
+const PORT = process.env.PORT_SERVER;
+const session = require('express-session');
+const store = session.MemoryStore();
+const morgan= require('morgan');
+const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 
-const PORT = process.env.PORT || 3000;
+app.options('*', cors());
+app.use(cors());
+app.use(express.json());
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(session({
+        resave: false,
+        saveUninitialized: false,
+        secret: process.env.SESSION_SECRET,
+        cookie: {maxAge:1000*60*60, sameSite:'none'},
+        store
+}))
+app.use(morgan('tiny'));
+app.use(helmet());
+app.use(cookieParser);
 
 app.get("/", (req, res) => {
-        res.send("Hello");
-})
+        res.send("Hello Dear");
+});
 
 
 // Starting server 

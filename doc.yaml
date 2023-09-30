@@ -1,0 +1,750 @@
+openapi: 3.0.0
+info:
+  title: E-Commerce API
+  version: 1.0.0
+  description: A restful API for e-commerce
+  contact:
+    email: 1nikolaus.albert1@gmail.com
+    name: Nikolaus Albert
+paths:
+  /login:
+    summary: Login a user with email and password
+    post:
+      summary: Log in user
+      description: ''
+      operationId: login_user
+      requestBody:
+        description: An object containing the user's password and username
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+              
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Successful response:
+                  value: Login successful
+                Failed response:
+                  value: Bad credentials
+      tags:
+        - login
+  /logout:
+    summary: Logout account
+    get:
+      summary: Logs out user
+      description: ''
+      operationId: logout_user
+      responses:
+        default:
+          description: Success
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Successful response:
+                  value: Logout successful
+      tags:
+        - logout
+  /register:
+    summary: Register new user account
+    post:
+      summary: Register new user account
+      description: ''
+      operationId: register_newUser
+      requestBody:
+        description: An object containing the user's credentials
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+      responses:
+        '201':
+          description: Success
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Successful response:
+                  value: New user account created.
+                Failed response:
+                  value: Failed. Try different email or password.
+      tags:
+        - users
+  /users:
+    summary: Get information of all user accounts
+    get:
+      summary: 'Get all users '
+      description: only for platform staff
+      operationId: get_users
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Success response:
+                  value: |
+                    [{
+                        "id": 3,
+                        "title": "Msc",
+                        "fullname": "Zeus Thunder",
+                        "gender": "male",
+                        "birth_date": "1990-03-03",
+                        "email": "zeus.t@email.com",
+                        "telephone": 123456,
+                        "user_type": "plattform staff",
+                        "created_at": "2023-09-26T10:38:56.325734"
+                    },
+                    {
+                        "id": 4,
+                        "title": "",
+                        "fullname": "Mira Kin",
+                        "gender": "female",
+                        "birth_date": "1989-03-23",
+                        "email": "mira.kin@email.com",
+                        "telephone": 134567,
+                        "user_type": "seller",
+                        "created_at": "2023-09-26T10:38:56.325734"
+                    }]
+      tags:
+        - users
+  /users/{id}:
+    parameters:
+      - in: path
+        name: id
+        description: this is user id
+        schema:
+          type: string
+          example: 3
+        required: true
+    
+    get:
+      summary: get a user detail
+      description: ''
+      operationId: get_user
+      responses:
+        '200':
+          description: Default error sample response
+          content:
+            application/json:
+              examples:
+                Success response for endpoint users/3:
+                  value: |
+                    {"id": 3,
+                        "title": "Msc",
+                        "fullname": "Zeus Thunder",
+                        "gender": "male",
+                        "birth_date": "1990-03-03",
+                        "email": "zeus.t@email.com",
+                        "telephone": 123456,
+                        "user_type": "plattform staff",
+                        "created_at": "2023-09-26T10:38:56.325734"
+                    }
+      tags:
+        - users
+    put:
+      summary: update user account
+      description: ''
+      operationId: update_user
+      requestBody:
+        description: An object containing the user's data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsersIdPut'
+      responses:
+        '200':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Success response:
+                  value: Success
+          description: Success
+        '400':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Invalid argument
+          description: Invalid argument
+      tags:
+        - users
+    delete:
+      summary: delete user account
+      description: ''
+      operationId: delete_user
+      responses:
+        '200':
+          description: Successful removal
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Successful removal of the id.
+        '400':
+          description: Failed removal
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Invalid argument
+      tags:
+        - users
+  /stores:
+    summary: Get all stores
+    get:
+      summary: get all stores
+      description: for platform staff
+      operationId: get_stores
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Success response:
+                  value: |-
+                    [
+                        {
+                            "id": 1,
+                            "admin_id": 4,
+                            "name": "Tech Master Co.",
+                            "description": "Selling top notch quality of electronics with affordable price",
+                            "created_at": "2023-09-26T11:31:53.558105"
+                        },
+                        {
+                            "id": 2,
+                            "admin_id": 7,
+                            "name": "YDS",
+                            "description": "Providing your daily needs of dress both casual and proffessional",
+                            "created_at": "2023-09-26T11:31:53.558105"
+                        }
+                    ]
+      tags:
+        - stores
+  /stores/register:
+    summary: Register new store
+    post:
+      summary: Register new store
+      description: ''
+      operationId: register_store
+      requestBody:
+        description: An object containing name and description of a store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoresRegister'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Success Response:
+                  value: |2-
+                     {
+                            "id": 1,
+                            "admin_id": 4,
+                            "name": "Tech Master Co.",
+                            "description": "Selling top notch quality of electronics with affordable price",
+                            "created_at": "2023-09-26T11:31:53.558105"
+                        }
+        '400':
+          description: Failed
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Failed Response:
+                  value: Invalid argument.
+      tags:
+        - stores
+  /stores/{id}:
+    parameters:
+      - in: path
+        name: id
+        description: Id of a store
+        schema:
+          type: string
+          example: 1
+        required: true        
+      
+    get:
+      summary: Get a store detail
+      description: ''
+      operationId: get_store
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Message:
+                  value: |2-
+                     {
+                            "id": 1,
+                            "admin_id": 4,
+                            "name": "Tech Master Co.",
+                            "description": "Selling top notch quality of electronics with affordable price",
+                            "created_at": "2023-09-26T11:31:53.558105"
+                        }
+        '400':
+          description: Failed
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Invalid argument
+      tags:
+        - stores
+  
+    put:
+      summary: Update store detail
+      description: ''
+      operationId: update_store
+      requestBody:
+        description: An object containing the store's data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoresIdPut'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Success
+        '400':
+          description: Failed
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Invalid argument
+      tags:
+        - stores
+  
+    delete:
+      summary: delete store
+      description: ''
+      operationId: delete_store
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Success
+        '400':
+          description: Failed
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Invalid argument
+      tags:
+        - stores
+        
+  /stores/{id}/store_product:
+    parameters:
+      - in: path
+        name: id
+        description: id of a store
+        schema:
+          type: string
+        required: true
+    
+    get :
+      summary: Show all products in a store
+      description: ''
+      operationId: store_product
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Message:
+                  value:
+                    [
+                      {
+                        "id": 1,
+                        "category_id": 1,
+                        "merchant_id": 1,
+                        "name": "Samsung X10",
+                        "price": "US",
+                        "unit_available": 100,
+                        "created_at": "2023-09-26T11:55:39.560512"
+                      },
+                      {
+                        "id": 2,
+                        "category_id": 3,
+                        "merchant_id": 1,
+                        "name": "Xi s4",
+                        "price": "Rp",
+                        "unit_available": 200,
+                        "created_at": "2023-09-26T11:55:39.560512"
+                      }
+                  ]
+        '400':
+          description: Failed
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Invalid argument
+      tags:
+      - store_product
+      
+    post:
+      summary: Add new product in a store
+      description: ''
+      operationId: add_product
+      requestBody:
+        description: An object containing the product's data(name, unit available, price)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreProductPost'
+      responses:
+        '201':
+          description: Success
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Success
+        '400':
+          description: Failed
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Invalid argument
+          
+      tags:
+        - store_product
+        
+    put:
+      summary: Update product in a store
+      description: ''
+      operationId: update_product
+      requestBody:
+        description: An object containing the product's data(name, unit available, price)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreProductPut'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Success
+        '400':
+          description: Failed
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Invalid argument
+          
+      tags:
+        - store_product
+  
+    delete:
+      summary: Delete product in a store
+      description: ''
+      operationId: delete_product
+      responses:
+        '201':
+          description: Success
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Success
+        '400':
+          description: Failed
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Invalid argument
+          
+      tags:
+        - store_product
+        
+  /category:
+    summary: Get all products category
+    get:
+      summary: Get all categories of product
+      description: ''
+      operationId: get_categories
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Message:
+                  value:
+                    [
+                      {
+                          "id": 1,
+                          "name": "smartphone",
+                          "parent_id": null
+                      },
+                      {
+                          "id": 2,
+                          "name": "computer",
+                          "parent_id": null
+                      },
+                      {
+                          "id": 3,
+                          "name": "camera",
+                          "parent_id": null
+                      }
+                    ]
+      tags:
+        - categories
+        
+  /{category}/products:
+    parameters:
+      - in: path
+        name: category
+        description: name of product category
+        schema:
+          type: string
+        required: true
+        
+    get:
+      summary: Get all products in a category
+      description: ''
+      operationId: Get products of a category
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Message:
+                  value:
+                    [{
+                        "id": 1,
+                        "category_id": 1,
+                        "merchant_id": 1,
+                        "name": "Samsung X10",
+                        "price": "US",
+                        "unit_available": 100,
+                        "created_at": "2023-09-26T11:55:39.560512"
+                    },
+                    {
+                        "id": 1,
+                        "category_id": 1,
+                        "merchant_id": 1,
+                        "name": "Samsung X11",
+                        "price": "US",
+                        "unit_available": 110,
+                        "created_at": "2023-10-26T11:55:39.560512"
+                    }]
+          
+        '400':
+          description: Failed
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Invalid argument
+      tags:
+        - categories
+        
+  /stores/category/products:
+    get:
+      summary: Get a product detail in a store and category
+      description: ''
+      operationId: get_product
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Messages:
+                  value:  
+                    {
+                        "id": 1,
+                        "category_id": 1,
+                        "merchant_id": 1,
+                        "name": "Samsung X10",
+                        "price": "US",
+                        "unit_available": 100,
+                        "created_at": "2023-09-26T11:55:39.560512"
+                    }
+        '400':
+          description: Failed
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Invalid argument
+      tags:
+        - stores
+ 
+ 
+      
+  /users/{id}/cart:
+    parameters:
+      - in: path
+        name: id
+        description: id of a user
+        schema:
+          type: string
+        required: true
+    
+    get:
+      summary: Get cart details of a user
+      description: ''
+      operationId: get_cart
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Success
+      tags:
+        - cart
+        
+  /users/{id}/history:
+    parameters:
+      - in: path
+        name: id
+        description: id of a user
+        schema:
+          type: string
+        required: true
+        
+    get:
+      summary: Get successful history of trades from a user
+      description: ''
+      operationId: history_trades
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Option 1:
+                  value: 
+                    [
+                      {
+                          "user_id": 5,
+                          "order_id": 1,
+                          "created_on": "2023-09-26T12:06:49.029898",
+                          "payment": "successful"
+                      },
+                      {
+                          "user_id": 5,
+                          "order_id": 6,
+                          "created_on": "2023-09-29T12:34:25.12761",
+                          "payment": "successful"
+                      }
+                  ]
+                Option 2:
+                  value: No history trade
+      tags:
+        - cart
+        
+components:
+  schemas:
+    Login:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    Register:
+      type: object
+      properties:
+        title:
+          type: string
+        fullname:
+          type: string
+        password:
+          type: string
+        gender:
+          type: string
+        birth_date:
+          type: string
+        email:
+          type: string
+        telephone:
+          type: integer
+        user_type:
+          type: string
+    UsersIdPut:
+      type: object
+      properties:
+        title:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+        telephone:
+          type: integer
+        user_type:
+          type: string
+        street_name:
+          type: integer
+        street_number:
+          type: integer
+        postcode:
+          type: string
+        city:
+          type: string
+        province:
+          type: string
+        country_code:
+          type: string
+    StoresRegister:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    StoresIdPut:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    StoreProductPost:
+      type: object
+      properties:
+        name:
+          type: string
+        unit_available:
+          type: integer
+        price:
+          type: integer
+    StoreProductPut:
+      type: object
+      properties:
+        name:
+          type: string
+        unit_available:
+          type: integer
+        price:
+          type: integer
