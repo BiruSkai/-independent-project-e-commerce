@@ -48,7 +48,7 @@ paths:
                   value: Logout successful
       tags:
         - logout
-  /register:
+  /register_user:
     summary: Register new user account
     post:
       summary: Register new user account
@@ -59,7 +59,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Register'
+              $ref: '#/components/schemas/RegisterUser'
       responses:
         '201':
           description: Success
@@ -349,7 +349,7 @@ paths:
       tags:
         - stores
         
-  /stores/{id}/store_product:
+  /stores/{id}/store_products:
     parameters:
       - in: path
         name: id
@@ -672,7 +672,7 @@ components:
           type: string
         password:
           type: string
-    Register:
+    RegisterUser:
       type: object
       properties:
         title:
