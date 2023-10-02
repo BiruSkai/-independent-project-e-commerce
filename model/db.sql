@@ -99,7 +99,9 @@ CREATE TABLE IF NOT EXISTS public.user_data
     telephone integer NOT NULL,
     user_type user_type NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    CONSTRAINT user_pkey PRIMARY KEY (id)
+    password character varying COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT user_pkey PRIMARY KEY (id),
+    CONSTRAINT unique_email UNIQUE (email)
 );
 
 ALTER TABLE IF EXISTS public.category
