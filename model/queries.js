@@ -6,6 +6,15 @@ class Queries {
                 this.schema = schema;
         }
 
+        async loginUser() {
+                const {email, password} = this.schema;
+                const user = await pool.query(`SELECT * FROM user_data WHERE email='${email}'`);
+                const correctPass = await bcrypt.compare(password, user.rows[0].password);
+                if(!user.rows[0]) return null;
+                if(correctPass) return {correct:true, id: user.rows[0].id};
+                else return false;
+        }
+
         async registerUser() {
                 const {title, fullname, hashedPass, gender, birth_date, email, telephone, user_type} = this.schema.userDetails;
                 try {
