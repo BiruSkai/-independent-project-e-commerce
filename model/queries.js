@@ -28,5 +28,7 @@ class Queries {
                 } catch(err) {
                         return {error: true, errorMessage: 'A Problem occurred.Please try a different username or/and password.'}
                 };
-        }
-}
+        };
+};
+
+module.exports = Queries;
