@@ -1,19 +1,22 @@
 const express = require('express');
+const {registerUser} = require('../controllers/register');
+const {loginUser, checkIfAuthenticated, logoutUser} = require('../controllers/login_out');
+const {allUsers, getUserById, deleteUserById} = require('../controllers/users');
 
 const loginRouter = express.Router();
-loginRouter.post('/', authenticateUser);
+loginRouter.post('/', loginUser);
 
 const logoutRouter = express.Router();
-logoutRouter.get('/', logout)
+logoutRouter.get('/', logoutUser);
 
 const registerUserRouter = express.Router();
 registerUserRouter.post('/', registerUser);
 
 const usersRouter = express.Router();
-usersRouter.get('/', getAllUsers);
-usersRouter.get('/:id', getUserById);
-usersRouter.put('/:id', updateUserById);
-usersRouter.delete('/:id', deleteUserById);
+usersRouter.get('/', allUsers,checkIfAuthenticated);
+usersRouter.get('/:id', getUserById,checkIfAuthenticated);
+usersRouter.put('/:id', updateUserById,checkIfAuthenticated);
+usersRouter.delete('/:id', deleteUserById,checkIfAuthenticated);
 
 const storesRouter = express.Router();
 storesRouter.get('/', getAllStores);
