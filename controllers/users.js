@@ -56,4 +56,4 @@ const deleteUserById = async(req,res) => {
         });
 };
 
-module.exports = {allUsers,getUserById,deleteUserById};
+module.exports = {allUsers,getUserById,updateUserById,deleteUserById};
