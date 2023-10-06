@@ -21,5 +21,5 @@ const pool = new Pool({
         port: process.env.PORT_POSTGRES
 });
 
-module.export = Pool;
+module.exports = pool;
 

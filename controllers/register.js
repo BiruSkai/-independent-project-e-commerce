@@ -1,5 +1,5 @@
 const Queries = require('../model/queries');
-const userQuerySchema = {name:'userRegister', userDetails:''};
+const userQuerySchema = {userDetails:''};
 const userRegisterQuery = new Queries(userQuerySchema);
 const bcrypt = require('bcrypt');
 
@@ -7,18 +7,20 @@ const registerUser = async (req, res) => {
         const {title, fullname, password, gender, birth_date, email, telephone, user_type} = req.body;
         const salt = await bcrypt.genSalt();
         const hashedPass = await bcrypt.hash(password, salt);
-        userQuerySchema.userDetails = {title, fullname, hashedPass, gender, birth_date, email, telephone, user_type};
+        userQuerySchema.userDetails = {title, fullname, gender, birth_date, email, telephone, user_type, hashedPass};
         userRegisterQuery.registerUser()
-        .then(data => {
+        .then(data => {             
                 if(!data.error){
                         req.session.user = data.data;
                         req.session.authenticated = true;
                         console.log(req.session);
-                        res.send('Register succeed');
+                        res.send(data.message);
                 } else {
-                        res.send(data.errorMessage);
+                      
+                        res.status(403).send(data.message);
                 }; 
         });
 };
 
-module.exports = registerUser;
+
+module.exports = {registerUser};

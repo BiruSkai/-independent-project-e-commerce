@@ -10,11 +10,11 @@ paths:
   /login:
     summary: Login a user with email and password
     post:
-      summary: Log in user
+      summary: Login user
       description: ''
       operationId: login_user
       requestBody:
-        description: An object containing the user's password and username
+        description: An object containing the user's password and email
         content:
           application/json:
             schema:
@@ -28,8 +28,15 @@ paths:
               examples:
                 Successful response:
                   value: Login successful
-                Failed response:
-                  value: Bad credentials
+        '400':
+          description: Failed to login
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Failed response email:
+                  value: email not found
+                Failed response password:
+                  value: password not matched
       tags:
         - login
   /logout:
@@ -49,9 +56,9 @@ paths:
       tags:
         - logout
   /register_user:
-    summary: Register new user account
+    summary: Register a new user account
     post:
-      summary: Register new user account
+      summary: Register a new user account
       description: ''
       operationId: register_newUser
       requestBody:
@@ -67,15 +74,17 @@ paths:
             text/plain; charset=utf-8:
               examples:
                 Successful response:
-                  value: New user account created.
-                Failed response:
-                  value: Failed. Try different email or password.
+                  value: Registration succeed
+                Failed response (similar email):
+                  value: Similar email found in db. Please try another email
+                Other failed response:
+                  value: Problem occurred 
       tags:
         - users
   /users:
-    summary: Get information of all user accounts
+    summary: Get all users
     get:
-      summary: 'Get all users '
+      summary: 'Get all users'
       description: only for platform staff
       operationId: get_users
       responses:
@@ -110,7 +119,7 @@ paths:
                     }]
       tags:
         - users
-  /users/{id}:
+  /user/data/{id}:
     parameters:
       - in: path
         name: id
@@ -121,9 +130,9 @@ paths:
         required: true
     
     get:
-      summary: get a user detail
+      summary: get general user detail
       description: ''
-      operationId: get_user
+      operationId: get_genUser
       responses:
         '200':
           description: Default error sample response
@@ -145,15 +154,15 @@ paths:
       tags:
         - users
     put:
-      summary: update user account
+      summary: update general user detail
       description: ''
-      operationId: update_user
+      operationId: update_genUser
       requestBody:
         description: An object containing the user's data
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UsersIdPut'
+              $ref: '#/components/schemas/putGenUser'
       responses:
         '200':
           content:
@@ -167,31 +176,74 @@ paths:
             text/plain; charset=utf-8:
               examples:
                 Message:
-                  value: Invalid argument
+                  value: Userdata's update failed.
           description: Invalid argument
       tags:
         - users
-    delete:
-      summary: delete user account
-      description: ''
-      operationId: delete_user
-      responses:
-        '200':
-          description: Successful removal
-          content:
-            text/plain; charset=utf-8:
-              examples:
-                Message:
-                  value: Successful removal of the id.
-        '400':
-          description: Failed removal
-          content:
-            text/plain; charset=utf-8:
-              examples:
-                Message:
-                  value: Invalid argument
-      tags:
-        - users
+
+/user/address/{id}:
+  parameters:
+    - in: path
+      name: id
+      description: this is user id
+      schema:
+        type: string
+        example: 3
+      required: true
+  
+  get:
+    summary: get the address of a user by id 
+    description: ''
+    operationId: get_addressUser
+    responses:
+      '200':
+        description: Default error sample response
+        content:
+          application/json:
+            examples:
+              Success response for endpoint users/3:
+                value: |
+                  {
+                      "id": "2",
+                      "user_id": 4,
+                      "street_name": "Jln.Karapitan",
+                      "street_number": 33,
+                      "postcode": 12324,
+                      "city": "Bandung",
+                      "province": "West Java",
+                      "country_code": "id",
+                      "updated_on": null
+                  }
+    tags:
+      - users
+  put:
+    summary: update the addres of a user by id 
+    description: ''
+    operationId: update_addressUser
+    requestBody:
+      description: An object containing the user's data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/putAddressUser'
+    responses:
+      '200':
+        content:
+          text/plain; charset=utf-8:
+            examples:
+              Success response:
+                value: Success
+        description: Success
+      '400':
+        content:
+          text/plain; charset=utf-8:
+            examples:
+              Message:
+                value: Useraddress's update failed.
+        description: Invalid argument.
+    tags:
+      - users
+   
   /stores:
     summary: Get all stores
     get:
@@ -668,7 +720,7 @@ components:
     Login:
       type: object
       properties:
-        username:
+        email:
           type: string
         password:
           type: string
@@ -691,19 +743,20 @@ components:
           type: integer
         user_type:
           type: string
-    UsersIdPut:
+    putGenUser:
       type: object
       properties:
         title:
           type: string
         password:
           type: string
-        email:
-          type: string
         telephone:
           type: integer
         user_type:
           type: string
+    putAddressUser:
+      type: object
+      properties:
         street_name:
           type: integer
         street_number:

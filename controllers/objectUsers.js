@@ -1,7 +1,7 @@
 const Queries = require('../model/queries');
 const querySchema = {
         name:'user_data',
-        id:'',title:'',telephone:'',street_name:'',street_number:'',postcode:'',city:'',provice:'',country_code:''
+        id:'',title:'',telephone:'',street_name:'',street_number:'',postcode:'',city:'',province:'',country_code:''
 };
 const userQuery = new Queries(querySchema);
 
@@ -42,7 +42,7 @@ const updateUserById = async(req, res) => {
         userQuery.getUserByIdFromSchema()
         .then( data => {
                 if(!data.error) {
-                        return res.send({data.rows[0], 'Update successful'});
+                        return res.send(data);
                 } return res.status(403).send(data.message);
         });
 };
@@ -57,3 +57,5 @@ const deleteUserById = async(req,res) => {
 };
 
 module.exports = {allUsers,getUserById,updateUserById,deleteUserById};
+
+module.exports = allUsers

@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const bodyParser = require("body-parser");
 require('dotenv').config();
 const PORT = process.env.PORT_SERVER;
 const session = require('express-session');
@@ -9,15 +8,17 @@ const store = session.MemoryStore();
 const morgan= require('morgan');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
-const {loginRouter, logoutRouter, registerUserRouter, usersRouter} = require('./routes/index');
-const {storesRouter, storeProductsRouter, productCategoriesRouter} = require('./routes/index');
-const {categoryAllProductsRouter, storesCategoryProductsRouter} = require('./routes/index');
-const {userCartRouter, userHistoryRouter} = require('./routes/index');
+const {loginRouter, logoutRouter, registerUserRouter, userRouter} = require('./routes/index');
+// const {storesRouter, storeProductsRouter, productCategoriesRouter} = require('./routes/index');
+// const {categoryAllProductsRouter, storesCategoryProductsRouter} = require('./routes/index');
+// const {userCartRouter, userHistoryRouter} = require('./routes/index');
 
 app.options('*', cors());
-app.use(cors());
+app.enable('trust proxy', 1);
+app.use(cookieParser());
+app.use(cors({credentials: true, origin: '*'}));
 app.use(express.json());
-app.use(bodyParser.urlencoded({extended:true}));
+app.use(express.urlencoded({extended:true}));
 app.use(session({
         resave: false,
         saveUninitialized: false,
@@ -27,19 +28,23 @@ app.use(session({
 }))
 app.use(morgan('tiny'));
 app.use(helmet());
-app.use(cookieParser);
+
 
 app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
 app.use('/register_user', registerUserRouter);
-app.use('/users', usersRouter);
-app.use('/stores', storesRouter);
-app.use('/stores/:id/store_products', storeProductsRouter);
-app.use('/category', productCategoriesRouter);
-app.use('/:category/products', categoryAllProductsRouter);
-app.use('/stores/category/products', storesCategoryProductsRouter);
-app.use('/users/:id/cart', userCartRouter);
-app.use('/users/:id/history', userHistoryRouter);
+app.use('/user', userRouter);
+// app.use('/stores', storesRouter);
+// app.use('/stores/:id/store_products', storeProductsRouter);
+// app.use('/category', productCategoriesRouter);
+// app.use('/:category/products', categoryAllProductsRouter);
+// app.use('/stores/category/products', storesCategoryProductsRouter);
+// app.use('/users/:id/cart', userCartRouter);
+// app.use('/users/:id/history', userHistoryRouter);
+
+app.use((err, req, res, next) => {
+        res.send(err.message);
+    });
 
 // Starting server 
 app.listen(PORT, () => {
