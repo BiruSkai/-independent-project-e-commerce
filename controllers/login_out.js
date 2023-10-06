@@ -1,5 +1,5 @@
 const Queries = require('../model/queries');
-const querySchema = {name: 'login_out', email:'', password:''};
+const querySchema = {email:'', password:''};
 const loginQuery = new Queries(querySchema);
 
 const loginUser = async(req, res) => {
@@ -13,12 +13,12 @@ const loginUser = async(req, res) => {
                                 req.session.user = {id: data.id};
                                 req.session.authenticated = true;
                                 console.log(req.session);
-                                res.send('Login successfully.')
+                                res.send('Login successfully.');
                         } else {
-                                res.status(403).send('Bad credentials.')
+                                res.status(403).send(data.message);
                         };
                 } catch(error) {
-                        res.status(403).send('Bad credentials.')
+                        res.status(404).send(data.message);
                 };
         });
 };
