@@ -1,4 +1,4 @@
-const Queries = require('../model/queries');
+const Queries = require('../../model/customer/queries');
 const userQuerySchema = {userDetails:''};
 const userRegisterQuery = new Queries(userQuerySchema);
 const bcrypt = require('bcrypt');

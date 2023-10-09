@@ -1,4 +1,4 @@
-const pool = require('./pool');
+const pool = require('../pool');
 const bcrypt = require('bcrypt');
 
 class Queries {
@@ -8,12 +8,12 @@ class Queries {
 
         async loginUser() {
                 const {email, password} = this.schema;
-                const userData = await pool.query(`SELECT id,email,password FROM user_data WHERE email='${email}'`);          
+                const userData = await pool.query(`SELECT id,email,password, user_type FROM user_data WHERE email='${email}'`);          
                 // console.log(userData.rows);
                 if(!userData.rows[0]) return {message:'email not found'};
 
                 const correctPass = await bcrypt.compare(password, userData.rows[0].password);
-                if(correctPass) return {correct:true, id: userData.rows[0].id};
+                if(correctPass) return {correct:true, id: userData.rows[0].id, userType: userData.rows[0].user_type};
                 if(!correctPass) return {correct:false, message:'password not mactched'};
         };
 
@@ -44,7 +44,7 @@ class Queries {
         };
 
 //For subjectUsers.js
-        async subjectUserFromSchema() {
+        async userDataFromSchema() {
                 const {id} = this.schema;
                 try {
                         const userDetail = await pool.query(`SELECT * FROM user_data WHERE id=${id}`);
@@ -98,14 +98,7 @@ class Queries {
                 };  
         };
 
-// // //For objectUsers.js
-// //         async allUsersFromSchema() {
-// //                 const {name} = this.schema;
-// //                 const allUsersDetail = await pool.query(`SELECT * FROM '${name}'`);
-// //                 if(allUsersDetail.user_type === 'platform staff'){
-// //                         return allUsersDetail;
-// //                 } return ('You are not allowed to enter this area(allUsersDetail).')
-// //         };
+
 
 // //         async getUserByIdFromSchema() {
 // //                 const {name, id} = this.schema;

@@ -1,4 +1,4 @@
-const Queries = require('../model/queries');
+const Queries = require('../../model/customer/queries');
 const querySchema = {email:'', password:''};
 const loginQuery = new Queries(querySchema);
 
@@ -13,7 +13,11 @@ const loginUser = async(req, res) => {
                                 req.session.user = {id: data.id};
                                 req.session.authenticated = true;
                                 console.log(req.session);
-                                res.send('Login successfully.');
+
+                                const admin = 'platform staff';
+                                if (data.userType === admin) {
+                                        res.redirect('/admin/');
+                                } return res.send('Login successfully.');
                         } else {
                                 res.status(403).send(data.message);
                         };

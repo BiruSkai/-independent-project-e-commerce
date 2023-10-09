@@ -8,7 +8,7 @@ const store = session.MemoryStore();
 const morgan= require('morgan');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
-const {loginRouter, logoutRouter, registerUserRouter, userRouter} = require('./routes/index');
+const {adminRouter, loginRouter, logoutRouter, registerUserRouter, userRouter} = require('./routes/index');
 // const {storesRouter, storeProductsRouter, productCategoriesRouter} = require('./routes/index');
 // const {categoryAllProductsRouter, storesCategoryProductsRouter} = require('./routes/index');
 // const {userCartRouter, userHistoryRouter} = require('./routes/index');
@@ -29,7 +29,7 @@ app.use(session({
 app.use(morgan('tiny'));
 app.use(helmet());
 
-
+app.use('/admin', adminRouter);
 app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
 app.use('/register_user', registerUserRouter);
