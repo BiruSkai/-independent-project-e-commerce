@@ -3,7 +3,7 @@ const {registerUser} = require('../controllers/customer/register');
 const {adminAuthenticate, adminQuery, customerData, customerAddress} = require('../controllers/admin/admin');
 const {loginUser, checkIfAuthenticated, logoutUser} = require('../controllers/customer/login_out');
 const {userData, userAddress, updateUserAddress, updateUserData} = require('../controllers/customer/subjectUsers');
-const {productCategory} = require('../controllers/customer/productCategory');
+const {productCategory, productsInCategory, productInfo} = require('../controllers/customer/productCategory');
 
 const loginRouter = express.Router();
 loginRouter.post('/', loginUser,adminAuthenticate);
@@ -34,7 +34,8 @@ adminRouter.get('/:query', checkIfAuthenticated, adminQuery);
 //Product Category
 const productCategoryRouter = express.Router();
 productCategoryRouter.get('/categories', checkIfAuthenticated, productCategory);
-
+productCategoryRouter.get('/',  productsInCategory);
+productCategoryRouter.get('/:productName',  productInfo);
 
 // const storeProductsRouter = express.Router();
 // storeProductsRouter.get('/', getStoreAllProducts);

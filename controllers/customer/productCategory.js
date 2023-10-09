@@ -1,8 +1,10 @@
 const Queries = require('../../model/customer/queries');
-const queryUser = new Queries();
+const querySchema = {category:'', productName:''};
+const userQuery = new Queries(querySchema);
 
+//Getting all categories of products
 const productCategory = async(req, res) => { 
-        queryUser.productCategoryFromSchema()
+        userQuery.productCategoryFromSchema()
         .then(data => {
                 if(!data.error){
                         res.send(data.data);
@@ -11,6 +13,33 @@ const productCategory = async(req, res) => {
         });
 };
 
+// Getting all products in one category
+const productsInCategory = async(req, res) => {
+        const {category} = req.query;
+        querySchema.category = category;
+
+        userQuery.categoryFromSchema()
+        .then(data => {
+                if(!data.error) {
+                        return res.send(data.data);
+                } return res.status(400).send(data.message);
+        });
+};
+
+const productInfo = async(req, res) => {
+        const {productName} = req.params;
+        console.log(`productName: ${productName}`)
+
+        querySchema.productName = productName;
+
+        userQuery.productInfoFromSchema()
+        .then(data => {
+                if(!data.error) {
+                        return res.send(data.data);
+                } return res.status(400).send(data.message);
+        });
+};
+
 module.exports= {
-        productCategory
+        productCategory, productsInCategory, productInfo
 }
