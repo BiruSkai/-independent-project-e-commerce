@@ -1,11 +1,12 @@
 const express = require('express');
-const {registerUser} = require('../controllers/register');
-const {loginUser, checkIfAuthenticated, logoutUser} = require('../controllers/login_out');
-const {subjectUser, userAddress, updateUserAddress, updateUserData} = require('../controllers/subjectUsers');
-// const {allUsers, getUserById, deleteUserById} = require('../controllers/objectUsers');
+const {registerUser} = require('../controllers/customer/register');
+const {adminAuthenticate, adminQuery, customerData, customerAddress} = require('../controllers/admin/admin');
+const {loginUser, checkIfAuthenticated, logoutUser} = require('../controllers/customer/login_out');
+const {userData, userAddress, updateUserAddress, updateUserData} = require('../controllers/customer/subjectUsers');
+// const {allUsers, getUserById, deleteUserById} = require('../controllers/customer/objectUsers');
 
 const loginRouter = express.Router();
-loginRouter.post('/', loginUser);
+loginRouter.post('/', loginUser,adminAuthenticate);
 
 const logoutRouter = express.Router();
 logoutRouter.get('/', logoutUser);
@@ -14,10 +15,22 @@ const registerUserRouter = express.Router();
 registerUserRouter.post('/', registerUser);
 
 const userRouter = express.Router();
-userRouter.get('/data/:id', subjectUser,checkIfAuthenticated);
+userRouter.get('/data/:id', userData,checkIfAuthenticated);
 userRouter.put('/data/:id', updateUserData,checkIfAuthenticated);
 userRouter.get('/address/:id', userAddress,checkIfAuthenticated);
 userRouter.put('/address/:id', updateUserAddress,checkIfAuthenticated);
+
+const adminRouter = express.Router();
+adminRouter.get('/', adminAuthenticate);
+
+// customerData & customerAddress with req.query
+adminRouter.get('/customerData', customerData,checkIfAuthenticated);
+adminRouter.get('/customerAddress', customerAddress, checkIfAuthenticated);
+
+// The most general api request placed last
+// :query = userData || userAddress
+adminRouter.get('/:query', adminQuery, checkIfAuthenticated);
+
 
 // const storesRouter = express.Router();
 // storesRouter.get('/', getAllStores);
@@ -55,5 +68,5 @@ userRouter.put('/address/:id', updateUserAddress,checkIfAuthenticated);
 // };
 
 module.exports = {
-        loginRouter, logoutRouter, registerUserRouter, userRouter
+        loginRouter, logoutRouter, registerUserRouter, userRouter, adminRouter
 }
