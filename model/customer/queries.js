@@ -108,6 +108,43 @@ class Queries {
                 };
         };
 
+        async categoryFromSchema() {
+                const {category} = this.schema;
+                console.log(`category: ${category}`);
+
+                try{
+                        const productsInCategory = await pool.query(`
+                                SELECT * FROM product AS p
+                                JOIN product_category AS pc
+                                        ON pc.id = p.category_id
+                                WHERE pc.category_name='${category}'`)
+                        const productsLength = productsInCategory.rows.length;
+        
+                        if(productsLength > 0){return {error:false, data:productsInCategory.rows}};
+                        return {error:true, message:'Category or Product unavailable'} 
+                }catch(err){
+                        return {error:true, message:'Error catched'};
+                };
+        };
+
+        async productInfoFromSchema() {
+                const {productName} = this.schema;
+                console.log(`productName in method: ${productName}`);
+
+                try{
+                        const productInfo = await pool.query(`
+                                SELECT * FROM product 
+                                WHERE product_name='${productName}'`);
+                        const productInfoLength = productInfo.rows.length;
+        
+                        if(productInfoLength > 0){return {error:false, data:productInfo.rows}};
+                        return  {error:true, 
+                                message:"Product info unavailable or failure on writting the product's alphabet"};
+                }catch(err){
+                        return {error:true, message:'Error catched'};
+                };
+        };
+
 // //         async deleteUserIdBySchema() {
 // //                 const {name, id} = this.schema;
 // //                 try {
