@@ -3,7 +3,7 @@ const {registerUser} = require('../controllers/customer/register');
 const {adminAuthenticate, adminQuery, customerData, customerAddress} = require('../controllers/admin/admin');
 const {loginUser, checkIfAuthenticated, logoutUser} = require('../controllers/customer/login_out');
 const {userData, userAddress, updateUserAddress, updateUserData} = require('../controllers/customer/subjectUsers');
-// const {allUsers, getUserById, deleteUserById} = require('../controllers/customer/objectUsers');
+const {productCategory} = require('../controllers/customer/productCategory');
 
 const loginRouter = express.Router();
 loginRouter.post('/', loginUser,adminAuthenticate);
@@ -15,29 +15,26 @@ const registerUserRouter = express.Router();
 registerUserRouter.post('/', registerUser);
 
 const userRouter = express.Router();
-userRouter.get('/data/:id', userData,checkIfAuthenticated);
-userRouter.put('/data/:id', updateUserData,checkIfAuthenticated);
-userRouter.get('/address/:id', userAddress,checkIfAuthenticated);
-userRouter.put('/address/:id', updateUserAddress,checkIfAuthenticated);
+userRouter.get('/data/:id', checkIfAuthenticated, userData);
+userRouter.put('/data/:id', checkIfAuthenticated, updateUserData);
+userRouter.get('/address/:id', checkIfAuthenticated, userAddress);
+userRouter.put('/address/:id', checkIfAuthenticated, updateUserAddress);
 
 const adminRouter = express.Router();
 adminRouter.get('/', adminAuthenticate);
 
 // customerData & customerAddress with req.query
-adminRouter.get('/customerData', customerData,checkIfAuthenticated);
-adminRouter.get('/customerAddress', customerAddress, checkIfAuthenticated);
+adminRouter.get('/customerData', checkIfAuthenticated, customerData);
+adminRouter.get('/customerAddress', checkIfAuthenticated, customerAddress);
 
 // The most general api request placed last
 // :query = userData || userAddress
-adminRouter.get('/:query', adminQuery, checkIfAuthenticated);
+adminRouter.get('/:query', checkIfAuthenticated, adminQuery);
 
+//Product Category
+const productCategoryRouter = express.Router();
+productCategoryRouter.get('/categories', checkIfAuthenticated, productCategory);
 
-// const storesRouter = express.Router();
-// storesRouter.get('/', getAllStores);
-// storesRouter.post('/register', registerStore);
-// storesRouter.get('/:id', getStoreById);
-// storesRouter.put('/:id', updateStoreById);
-// storesRouter.delete('/:id', deleteStoreById);
 
 // const storeProductsRouter = express.Router();
 // storeProductsRouter.get('/', getStoreAllProducts);
@@ -54,6 +51,13 @@ adminRouter.get('/:query', adminQuery, checkIfAuthenticated);
 // const storesCategoryProductsRouter = express.Router();
 // storesCategoryProductsRouter.get('/', productDetail_inStoreCategory);
 
+// const storesRouter = express.Router();
+// storesRouter.get('/', getAllStores);
+// storesRouter.post('/register', registerStore);
+// storesRouter.get('/:id', getStoreById);
+// storesRouter.put('/:id', updateStoreById);
+// storesRouter.delete('/:id', deleteStoreById);
+
 // const userCartRouter = express.Router();
 // userCartRouter.get('/', userCartDetail);
 
@@ -68,5 +72,6 @@ adminRouter.get('/:query', adminQuery, checkIfAuthenticated);
 // };
 
 module.exports = {
-        loginRouter, logoutRouter, registerUserRouter, userRouter, adminRouter
+        loginRouter, logoutRouter, registerUserRouter, userRouter, adminRouter,
+        productCategoryRouter
 }
