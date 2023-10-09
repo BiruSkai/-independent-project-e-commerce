@@ -5,7 +5,7 @@ class Queries {
         constructor (schema) {
                 this.schema = schema;
         }
-
+// For login and logout
         async loginUser() {
                 const {email, password} = this.schema;
                 const userData = await pool.query(`SELECT id,email,password, user_type FROM user_data WHERE email='${email}'`);          
@@ -16,7 +16,7 @@ class Queries {
                 if(correctPass) return {correct:true, id: userData.rows[0].id, userType: userData.rows[0].user_type};
                 if(!correctPass) return {correct:false, message:'password not mactched'};
         };
-
+// For user Registration
         async registerUser() {
                 const {title, fullname, hashedPass, gender, birth_date, email, telephone, user_type} = this.schema.userDetails;
                 const usedEmails = await pool.query(`SELECT email FROM user_data`);
@@ -98,33 +98,15 @@ class Queries {
                 };  
         };
 
-
-
-// //         async getUserByIdFromSchema() {
-// //                 const {name, id} = this.schema;
-// //                 const userIdDetail = await pool.query(`SELECT * FROM '${name}' WHERE id ='${id}'`);
-// //                 if(userIdDetail.user_type === 'platform staff'){
-// //                         return {error:false, userIdDetail};
-// //                 } return {error:true, message:'You are not allowed to enter this area(userIdDetail).'}
-// //         };
-
-// //         async updateUserByIdFromSchema() {
-// //                 const {name,id,title,telephone,street_name,street_number,postcode,city,province,country_code} = this.schema;
-// //                 const updateUserTitle = await pool.query(`UPDATE TABLE '${name}' SET title='${title}' WHERE id='${id}`);
-// //                 const updateUserTelephone = await pool.query(`UPDATE TABLE '${name}' SET title='${telephone}' WHERE id='${id}`);
-// //                 const updateUserStreetName = await pool.query(`UPDATE TABLE '${name}' SET title='${street_name}' WHERE id='${id}`);
-// //                 const updateUserStreetNr = await pool.query(`UPDATE TABLE '${name}' SET title='${street_number}' WHERE id='${id}`);
-// //                 const updateUserPostcode = await pool.query(`UPDATE TABLE '${name}' SET title='${postcode}' WHERE id='${id}`);
-// //                 const updateUserCity = await pool.query(`UPDATE TABLE '${name}' SET title='${city}' WHERE id='${id}`);
-// //                 const updateUserProvince = await pool.query(`UPDATE TABLE '${name}' SET title='${province}' WHERE id='${id}`);
-// //                 const updateUserCountryCode = await pool.query(`UPDATE TABLE '${name}' SET title='${country_code}' WHERE id='${id}`);
-                
-// //                 if(userIdDetail.user_type === 'platform staff' || req.session.id === id){
-// //                         const updateDatas = updateUserTitle || updateUserTelephone || updateUserStreetName || updateUserStreetNr || 
-// //                         updateUserPostcode || updateUserCity || updateUserProvince || updateUserCountryCode;
-// //                         return {error:false, updateDatas};
-// //                 } return {error:true, message:'You are not allowed to enter this area(userIdDetail).'}
-// //         };
+// For Product Category
+        async productCategoryFromSchema() {
+                const productCategory = await pool.query(`SELECT * FROM product_category`);
+                try{
+                        return {error:false, data:productCategory.rows};
+                }catch(err){
+                        return {error:true, message:'Error fetching product category'};
+                };
+        };
 
 // //         async deleteUserIdBySchema() {
 // //                 const {name, id} = this.schema;
