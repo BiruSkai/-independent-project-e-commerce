@@ -9,8 +9,7 @@ const morgan= require('morgan');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const {adminRouter, loginRouter, logoutRouter, registerUserRouter, userRouter} = require('./routes/index');
-const {productCategoryRouter} = require('./routes/index');
-// const {userCartRouter, userHistoryRouter} = require('./routes/index');
+const {productCategoryRouter, cartRouter} = require('./routes/index');
 
 app.options('*', cors());
 app.enable('trust proxy', 1);
@@ -34,6 +33,7 @@ app.use('/logout', logoutRouter);
 app.use('/register_user', registerUserRouter);
 app.use('/user', userRouter);
 app.use('/products', productCategoryRouter);
+app.use('/cart', cartRouter);
 // app.use('/:category/products', categoryAllProductsRouter);
 // app.use('/stores/category/products', storesCategoryProductsRouter);
 // app.use('/stores', storesRouter);

@@ -145,6 +145,38 @@ class Queries {
                 };
         };
 
+        async initializeUserFromSchema() {
+                const initializeId = this.schema.sessionUserId;
+                console.log(`initializeId in Schema: ${initializeId}`);
+
+                try {
+                        // console.log('try')
+                        // Insert InitializeId to initialize_cart
+                        const initiate = await pool.query(
+                                `INSERT INTO initialize_cart(session_user_id, created_on)
+                                VALUES(${initializeId}, NOW())`);
+                        // console.log(`After initiate`);
+
+                        //Get Object where fullname as a property
+                        const getUserNameObject = await pool.query(
+                                `SELECT fullname FROM user_data where id=${initializeId}`);
+                        const getUserName = getUserNameObject.rows[0].fullname;
+                        // console.log(`getUserName: ${initializeId}, ${getUserName}`)
+
+                        //Insert InitializeId and its fullname to cart
+                        const initializeIdToCart = await pool.query(
+                                `INSERT INTO cart(initialize_id, user_name) 
+                                VALUES(${initializeId}, '${getUserName}')`);
+                        // console.log(`initializedStatus: ${initializeIdToCart}`);
+
+                        return {error:false, message: 'Cart initialized. Enjoy your shopping.'};
+                       
+                } catch(err){
+                        console.log('Catch err')
+                        return {error:true, message:err};
+                };
+        };
+
 // //         async deleteUserIdBySchema() {
 // //                 const {name, id} = this.schema;
 // //                 try {

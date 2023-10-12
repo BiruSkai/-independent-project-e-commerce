@@ -747,9 +747,15 @@ get:
           examples:
             Message:
               value:
-                {
-                    
-                }
+                  {
+                    "id": "4",
+                    "category_id": 18,
+                    "merchant_id": 3,
+                    "product_name": "Aqua",
+                    "unit_available": 500,
+                    "created_at": "2023-09-26T04:55:39.560Z",
+                    "price": "0.3"
+                  }
       
     '400':
       description: Failed
@@ -757,7 +763,7 @@ get:
         text/plain; charset=utf-8:
           examples:
             Message:
-              value: Product unavailable
+              value: Product unavailable or spelling mistake
   tags:
     - categories
         
