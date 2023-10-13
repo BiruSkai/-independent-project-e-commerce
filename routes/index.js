@@ -4,7 +4,7 @@ const {adminAuthenticate, adminQuery, customerData, customerAddress} = require('
 const {loginUser, checkIfAuthenticated, logoutUser} = require('../controllers/customer/login_out');
 const {userData, userAddress, updateUserAddress, updateUserData} = require('../controllers/customer/subjectUsers');
 const {productCategory, productsInCategory, productInfo} = require('../controllers/customer/productCategory');
-const {initializeCart} = require('../controllers/customer/cart');
+const {initializeCart, chosenProduct} = require('../controllers/customer/cart');
 
 const loginRouter = express.Router();
 loginRouter.post('/', loginUser,adminAuthenticate);
@@ -41,6 +41,7 @@ productCategoryRouter.get('/:productName',  productInfo);
 //Cart
 const cartRouter = express.Router();
 cartRouter.get('/initCart', checkIfAuthenticated, initializeCart);
+cartRouter.post('/chooseProducts', checkIfAuthenticated, chosenProduct);
 
 // const storeProductsRouter = express.Router();
 // storeProductsRouter.get('/', getStoreAllProducts);
@@ -66,13 +67,6 @@ cartRouter.get('/initCart', checkIfAuthenticated, initializeCart);
 
 // const userHistoryRouter = express.Router();
 // userHistoryRouter.get('/', userHistoryDetail);
-
-// module.exports = {
-//         loginRouter, logoutRouter, registerUserRouter, usersRouter,
-//         storesRouter, storeProductsRouter, productCategoriesRouter,
-//         categoryAllProductsRouter, storesCategoryProductsRouter,
-//         userCartRouter, userHistoryRouter
-// };
 
 module.exports = {
         loginRouter, logoutRouter, registerUserRouter, userRouter, adminRouter,
