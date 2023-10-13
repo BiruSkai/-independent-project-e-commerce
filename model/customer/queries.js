@@ -180,27 +180,41 @@ class Queries {
         async chosenProductFromSchema() {
                 const {product_id, quantity} = this.schema.selectProduct;
                 const cartId = this.schema.sessionUserId;
-                // console.log(`productId-quantity in Schema: ${product_id}-${quantity}, cartId in Schema: ${cartId}`);
+                console.log(`productId-quantity in Schema: ${product_id}-${quantity}, cartId in Schema: ${cartId}`);
 
                 try{
-                        // console.log('try-chosenProductFromSchema');
-                        const priceSelectProduct = await pool.query(`SELECT price, product_name FROM product WHERE id=${product_id}`);
+                        const priceSelectProduct = await pool.query(`SELECT price, product_name, unit_available FROM product WHERE id=${product_id}`);
+                        // console.log(priceSelectProduct)
 
-                        const price = priceSelectProduct.rows[0].price;
-                        const product_name = priceSelectProduct.rows[0].product_name;
-                        // console.log(price, product_name);
+                        const priceSelectProductLength = priceSelectProduct.rows.length;
+                        // console.log(`PriceSelectProductLength: ${priceSelectProductLength}`);
 
-                        const totalCost = quantity * price;
-                        // console.log(totalCost);
+                        const unitInMerchant = priceSelectProduct.rows[0].unit_available;
+                        // console.log(`UnitInMerchant: ${unitInMerchant}`)
 
-                        const fillProductCart = await pool.query(
-                                `INSERT INTO product_cart(product_id, cart_id, quantity, price, total_cost)
-                                VALUES(${product_id}, ${cartId}, ${quantity}, ${price}, ${totalCost})`);
-                        // console.log('post fill product')
+                        if (priceSelectProductLength <= 0 ) {
+                                return {error:true, message: 'Product id not found'};
+                        }
+                        else if (unitInMerchant < quantity) {
+                                return {error:true, message: `Merchant has only ${unitInMerchant} unit(s). Please modify your unit query.`}
+                        }
+                        else {
+                                const price = priceSelectProduct.rows[0].price;
+                                const product_name = priceSelectProduct.rows[0].product_name;
+                                // console.log(price, product_name);
 
-                        return [
-                                {error:false, message:`${quantity} ${product_name} added to cart. Temporary total cost is $${totalCost}`},
-                                 this]
+                                const totalCost = quantity * price;
+                                // console.log(totalCost);
+
+                                const fillProductCart = await pool.query(
+                                        `INSERT INTO product_cart(product_id, cart_id, quantity, price, total_cost)
+                                        VALUES(${product_id}, ${cartId}, ${quantity}, ${price}, ${totalCost})`);
+                                // console.log('post fill product')
+
+                                return [
+                                        {error:false, message:`${quantity} ${product_name} added to cart. Temporary total cost is $${totalCost}`},
+                                        this]
+                                }
                 }catch(err){
                         return {error:true, message:err};
                 };
