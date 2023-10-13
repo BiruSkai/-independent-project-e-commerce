@@ -177,6 +177,35 @@ class Queries {
                 };
         };
 
+        async chosenProductFromSchema() {
+                const {product_id, quantity} = this.schema.selectProduct;
+                const cartId = this.schema.sessionUserId;
+                // console.log(`productId-quantity in Schema: ${product_id}-${quantity}, cartId in Schema: ${cartId}`);
+
+                try{
+                        // console.log('try-chosenProductFromSchema');
+                        const priceSelectProduct = await pool.query(`SELECT price, product_name FROM product WHERE id=${product_id}`);
+
+                        const price = priceSelectProduct.rows[0].price;
+                        const product_name = priceSelectProduct.rows[0].product_name;
+                        // console.log(price, product_name);
+
+                        const totalCost = quantity * price;
+                        // console.log(totalCost);
+
+                        const fillProductCart = await pool.query(
+                                `INSERT INTO product_cart(product_id, cart_id, quantity, price, total_cost)
+                                VALUES(${product_id}, ${cartId}, ${quantity}, ${price}, ${totalCost})`);
+                        // console.log('post fill product')
+
+                        return [
+                                {error:false, message:`${quantity} ${product_name} added to cart. Temporary total cost is $${totalCost}`},
+                                 this]
+                }catch(err){
+                        return {error:true, message:err};
+                };
+        };
+
 // //         async deleteUserIdBySchema() {
 // //                 const {name, id} = this.schema;
 // //                 try {
