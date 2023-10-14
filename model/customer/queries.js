@@ -147,7 +147,7 @@ class Queries {
 
         async initializeUserFromSchema() {
                 const initializeId = this.schema.sessionUserId;
-                console.log(`initializeId in Schema: ${initializeId}`);
+                // console.log(`initializeId in Schema: ${initializeId}`);
 
                 try {
                         // console.log('try')
@@ -172,15 +172,14 @@ class Queries {
                         return {error:false, message: 'Cart initialized. Enjoy your shopping.'};
                        
                 } catch(err){
-                        console.log('Catch err')
-                        return {error:true, message:err};
+                        return {error:true, message:err.detail};
                 };
         };
 
         async chosenProductFromSchema() {
                 const {product_id, quantity} = this.schema.selectProduct;
                 const cartId = this.schema.sessionUserId;
-                console.log(`productId-quantity in Schema: ${product_id}-${quantity}, cartId in Schema: ${cartId}`);
+                // console.log(`productId-quantity in Schema: ${product_id}-${quantity}, cartId in Schema: ${cartId}`);
 
                 try{
                         const priceSelectProduct = await pool.query(`SELECT price, product_name, unit_available FROM product WHERE id=${product_id}`);
@@ -216,6 +215,49 @@ class Queries {
                                         this]
                                 }
                 }catch(err){
+                        return {error:true, message:err};
+                };
+        };
+
+        async deleteChosenProductFromSchema() {
+                const productcart_id = this.schema.selectOrder;
+                // console.log(`productcart_id in Schema: ${productcart_id}`);
+
+                try {
+                        const deleteProduct = await pool.query(`DELETE FROM product_cart WHERE productcart_id=${productcart_id}`);
+                        // console.log(`post deleteProduct`);
+
+                        return {error: false, message:`The product has been deleted from your cart.`}
+                } catch(err) {
+                        return {error: true, message:err};
+                };
+        };
+
+        async cartPreviewFromSchema() {
+                const {sessionUserId} = this.schema;
+                // console.log(`sessionUserId: ${sessionUserId}`);
+
+                try {
+                        // console.log('try cartPreviewSchema')
+                        const cartPreview = await pool.query(
+                                `SELECT product_name, quantity, product_cart.price AS price_unit, total_cost
+                                FROM product_cart 
+                                JOIN product
+                                        ON product.id = product_cart.product_id
+                                WHERE cart_id =${sessionUserId}`
+                                );
+                        
+                        let data = cartPreview.rows;
+                        // console.log(data);
+
+                        let sum = Number(0);
+
+                        let allCost = data.forEach(e => sum += Number(e.total_cost))
+                        // console.log(`allCost: ${sum}`);
+
+                        return {error: false, data:data, data2:sum};
+                       
+                } catch(err) {
                         return {error:true, message:err};
                 };
         };

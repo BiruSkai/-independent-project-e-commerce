@@ -4,7 +4,7 @@ const {adminAuthenticate, adminQuery, customerData, customerAddress} = require('
 const {loginUser, checkIfAuthenticated, logoutUser} = require('../controllers/customer/login_out');
 const {userData, userAddress, updateUserAddress, updateUserData} = require('../controllers/customer/subjectUsers');
 const {productCategory, productsInCategory, productInfo} = require('../controllers/customer/productCategory');
-const {initializeCart, chosenProduct} = require('../controllers/customer/cart');
+const {initializeCart, chosenProduct,deleteChosenProduct,cartPreview} = require('../controllers/customer/cart');
 
 const loginRouter = express.Router();
 loginRouter.post('/', loginUser,adminAuthenticate);
@@ -41,7 +41,9 @@ productCategoryRouter.get('/:productName',  productInfo);
 //Cart
 const cartRouter = express.Router();
 cartRouter.get('/initCart', checkIfAuthenticated, initializeCart);
+cartRouter.get('/cartPreview', checkIfAuthenticated, cartPreview);
 cartRouter.post('/chooseProducts', checkIfAuthenticated, chosenProduct);
+cartRouter.delete('/chooseProducts/delete', checkIfAuthenticated, deleteChosenProduct);
 
 // const storeProductsRouter = express.Router();
 // storeProductsRouter.get('/', getStoreAllProducts);
