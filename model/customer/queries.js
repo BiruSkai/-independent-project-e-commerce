@@ -262,17 +262,83 @@ class Queries {
                 };
         };
 
-// //         async deleteUserIdBySchema() {
-// //                 const {name, id} = this.schema;
-// //                 try {
-// //                         const deleteUser = await pool.request(`DELETE FROM '${name}' WHERE id='${id}'`);
-// //                         if(deleteUser) {
-// //                                 return {message: 'User has been deleted'}
-// //                         } return {message: 'Delete order failed.'};
-// //                 } catch(err) {
-// //                         return {message: 'Delete order failed.'};
-// //                 };
-// //         };
+        async cardValidationFromSchema() {
+                
+                const {userId,method,creditCardNumber} = this.schema.paymentDetail;
+                // console.log(`inside Schema:, ${userId}, ${method}, ${creditCardNumber}`);
+                
+                
+                //Credit card's sample
+                // const creditCardNumber = 6011111111111117;
+
+                //A Formula to change creditCardNUmber to an array
+                let myFunc = num => Number(num);
+                const array = Array.from(String(creditCardNumber), myFunc);
+                // console.log(array);
+
+                //Find the max index in creditCardNumber array
+                let i = array.length - 1;
+                // console.log(typeof i);
+                // console.log(`length of i -1: ${i}`);
+
+                //A const for calculation which path the loop will take
+                const lastIndex = i;
+                // console.log(`Last index outside loop: ${lastIndex}`);
+
+                //Initial number for total
+                let total = 0;
+                for (i; i >= 0; i--){
+                        // console.log(`index: ${i}`);
+                        // console.log(typeof i);
+                        // console.log(`last index inside loop: ${lastIndex}`);
+                        
+                //Condition for path's calculation
+                        if((lastIndex - i) % 2 !== 0) {
+                                let double = array[i] * 2;
+                                if(double > 9) {
+                                        total += double - 9;
+                                        // console.log('double path')
+                                } else {
+                                        total += double;
+                                        // console.log('double path no substruction')
+                                };
+                        } else {
+                                // console.log(`mundane path`);
+                                total += array[i];
+                        };
+                };
+                try{
+                        // console.log(`total: ${total}`);
+                        if(total % 10 === 0) {
+                                // console.log(`inside if: ${userId}, ${method}, ${creditCardNumber}`)
+
+                                const saveValidCard = await pool.query(
+                                        `INSERT INTO payment(method, card_number, user_id, created_on) 
+                                        VALUES('${method}', ${creditCardNumber}, ${userId}, NOW())`
+                                );
+
+                                return {error:false, message:'card has been saved'};
+                        } else {
+                                return {error:true, message:'card not authentic and not saved'};
+                        };
+                } catch(err) {
+                        return {error:true, message:err};
+                }
+        };
+
+        async deleteCardFromSchema() {
+                const {userId} = this.schema.paymentDetail;
+                // console.log(`userId in Schema: ${userId}`);
+
+                try {
+                        const deleteCard = await pool.query(`DELETE FROM payment WHERE user_id=${userId}`);
+                        // console.log(`post deleteCard`);
+
+                        return {error: false, message:`Card has been deleted.`}
+                } catch(err) {
+                        return {error: true, message:err};
+                };
+        };
 };
 
 module.exports = Queries;

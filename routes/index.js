@@ -5,6 +5,7 @@ const {loginUser, checkIfAuthenticated, logoutUser} = require('../controllers/cu
 const {userData, userAddress, updateUserAddress, updateUserData} = require('../controllers/customer/subjectUsers');
 const {productCategory, productsInCategory, productInfo} = require('../controllers/customer/productCategory');
 const {initializeCart, chosenProduct,deleteChosenProduct,cartPreview} = require('../controllers/customer/cart');
+const {cardValidation, deleteCard} = require('../controllers/customer/payment');
 
 const loginRouter = express.Router();
 loginRouter.post('/', loginUser,adminAuthenticate);
@@ -20,6 +21,8 @@ userRouter.get('/data/:id', checkIfAuthenticated, userData);
 userRouter.put('/data/:id', checkIfAuthenticated, updateUserData);
 userRouter.get('/address/:id', checkIfAuthenticated, userAddress);
 userRouter.put('/address/:id', checkIfAuthenticated, updateUserAddress);
+userRouter.post('/payment/card', checkIfAuthenticated, cardValidation);
+userRouter.delete('/payment/card', checkIfAuthenticated, deleteCard);
 
 const adminRouter = express.Router();
 adminRouter.get('/', adminAuthenticate);
