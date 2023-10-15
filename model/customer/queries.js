@@ -146,7 +146,7 @@ class Queries {
         };
 
         async initializeUserFromSchema() {
-                const initializeId = this.schema.sessionUserId;
+                const initializeId = this.schema.cartDetail.id;
                 // console.log(`initializeId in Schema: ${initializeId}`);
 
                 try {
@@ -157,18 +157,6 @@ class Queries {
                                 VALUES(${initializeId}, NOW())`);
                         // console.log(`After initiate`);
 
-                        //Get Object where fullname as a property
-                        const getUserNameObject = await pool.query(
-                                `SELECT fullname FROM user_data where id=${initializeId}`);
-                        const getUserName = getUserNameObject.rows[0].fullname;
-                        // console.log(`getUserName: ${initializeId}, ${getUserName}`)
-
-                        //Insert InitializeId and its fullname to cart
-                        const initializeIdToCart = await pool.query(
-                                `INSERT INTO cart(initialize_id, user_name) 
-                                VALUES(${initializeId}, '${getUserName}')`);
-                        // console.log(`initializedStatus: ${initializeIdToCart}`);
-
                         return {error:false, message: 'Cart initialized. Enjoy your shopping.'};
                        
                 } catch(err){
@@ -177,8 +165,8 @@ class Queries {
         };
 
         async chosenProductFromSchema() {
-                const {product_id, quantity} = this.schema.selectProduct;
-                const cartId = this.schema.sessionUserId;
+                const {product_id, quantity} = this.schema.cartDetail.selectProduct;
+                const cartId = this.schema.cartDetail.id;
                 // console.log(`productId-quantity in Schema: ${product_id}-${quantity}, cartId in Schema: ${cartId}`);
 
                 try{
@@ -220,11 +208,11 @@ class Queries {
         };
 
         async deleteChosenProductFromSchema() {
-                const productcart_id = this.schema.selectOrder;
-                // console.log(`productcart_id in Schema: ${productcart_id}`);
+                const product_id = this.schema.cartDetail.selectOrder;
+                // console.log(`productcart_id in Schema: ${product_id}`);
 
                 try {
-                        const deleteProduct = await pool.query(`DELETE FROM product_cart WHERE productcart_id=${productcart_id}`);
+                        const deleteProduct = await pool.query(`DELETE FROM product_cart WHERE product_id=${product_id}`);
                         // console.log(`post deleteProduct`);
 
                         return {error: false, message:`The product has been deleted from your cart.`}
@@ -234,17 +222,16 @@ class Queries {
         };
 
         async cartPreviewFromSchema() {
-                const {sessionUserId} = this.schema;
-                // console.log(`sessionUserId: ${sessionUserId}`);
+                const {id} = this.schema.cartDetail;
+                // console.log(`sessionUserId: ${id}`);
 
                 try {
-                        // console.log('try cartPreviewSchema')
                         const cartPreview = await pool.query(
                                 `SELECT product_name, quantity, product_cart.price AS price_unit, total_cost
                                 FROM product_cart 
                                 JOIN product
                                         ON product.id = product_cart.product_id
-                                WHERE cart_id =${sessionUserId}`
+                                WHERE cart_id =${id}`
                                 );
                         
                         let data = cartPreview.rows;
@@ -254,6 +241,7 @@ class Queries {
 
                         let allCost = data.forEach(e => sum += Number(e.total_cost))
                         // console.log(`allCost: ${sum}`);
+                        // console.log(this);
 
                         return {error: false, data:data, data2:sum};
                        
@@ -339,6 +327,52 @@ class Queries {
                         return {error: true, message:err};
                 };
         };
+
+        async checkoutCartFromSchema() {
+                let {id, payment_method} = this.schema.cartDetail;
+                console.log(`id-payment_method: ${id}-${payment_method}`);
+
+                //Promise the the asked method
+                const checkPreviewCart = await this.cartPreviewFromSchema()
+                        .then(data => {
+                                if(!data.error) {
+                                        return {orderList: data.data, total_cost: data.data2};
+                                } return;
+                        });
+                console.log('after chaining method: ', checkPreviewCart);    
+
+                const checkCardAvailability = async() => {
+                        
+                                const checkCardAvailability = await pool.query(
+                                        `SELECT method, card_number FROM payment WHERE user_id=${id}`
+                                );
+
+                                // console.log(checkCardAvailability);
+                                return checkCardAvailability.rows[0].method;
+                };                
+                        
+
+                let checkpayment;
+                switch(payment_method) {
+                        case 'credit card':
+                                checkpayment = await checkCardAvailability().then(data => data);
+                                break;
+                        case 'bank transfer':
+                                checkpayment = 'bank transfer';  
+                                break;
+                        case 'paypal':
+                                checkpayment = 'paypal';     
+                                break;                                
+                        default:
+                                return {error:true, message: 'Accepted payment method: credit card, bank transfer, paypal.'}
+                };
+
+                console.log(checkpayment);
+
+                // const fillCheckoutCart = await pool.query(
+                //         `INSERT `)
 };
 
+       
+        }
 module.exports = Queries;
