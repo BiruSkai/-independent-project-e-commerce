@@ -19,6 +19,9 @@ const initializeCart = async(req, res, next) => {
                         res.send(data.message);
                         next();
                 }else {
+                        if(data.message.includes('already exists')){
+                                return res.send('Initialized Id available. Enjoy your shopping.')
+                        };
                         return res.status(400).send(data.message);
                 };
         });
@@ -50,21 +53,28 @@ const deleteChosenProduct = async(req,res) => {
         cartQuery.deleteChosenProductFromSchema()
         .then (data => {
                 if(!data.error){
-                       return res.send(data.message);
+                        res.send(data.message);
+                        return;
                 } return res.status(400).send(data.err);
         });
 };
 
 const cartPreview = async(req,res) => {
+
+        const {id} = req.session.user;
+        console.log(id);
+
+        querySchema.cartDetail = {id};
+
         cartQuery.cartPreviewFromSchema()
         .then(data => {
                 if(!data.error){
-                        res.send([data[0].data,`Total cost of all items: $${data[0].data2}. Proceed to checkout cart for payment.`]);
+                        res.status(200).send([data.data,`Total cost of all items: $${data.data2}. Proceed to checkout cart for payment.`]);
 
-                        console.log(data[1]);
-                        return data[1];
+                        // console.log(data);
+                        return data;
                 } else {
-                        return res.send(data.message);
+                        return res.status(400).send(data.message);
                 };
         });
 };
@@ -80,8 +90,13 @@ const checkoutCart = async(req,res) => {
         cartQuery.checkoutCartFromSchema()
         .then(data => {
                 if (!data.error){
-                        res.send(data.message);
-                        return;
+                        cartQuery.UninitializedCartFromSchema()
+                        .then(data => {
+                                if(!data.error){
+                                        return res.send([data.checkout_branch, data.message]);
+                                } return res.status(400).send(data.message);
+                        });
+
                 } else {
                         res.status(400).send(data.message);
                         return;

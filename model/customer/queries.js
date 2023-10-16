@@ -150,12 +150,13 @@ class Queries {
                 // console.log(`initializeId in Schema: ${initializeId}`);
 
                 try {
+                        
                         // console.log('try')
                         // Insert InitializeId to initialize_cart
                         const initiate = await pool.query(
                                 `INSERT INTO initialize_cart(session_user_id, created_on)
                                 VALUES(${initializeId}, NOW())`);
-                        // console.log(`After initiate`);
+                        console.log(`After initiate`);
 
                         return {error:false, message: 'Cart initialized. Enjoy your shopping.'};
                        
@@ -170,7 +171,12 @@ class Queries {
                 // console.log(`productId-quantity in Schema: ${product_id}-${quantity}, cartId in Schema: ${cartId}`);
 
                 try{
-                        const priceSelectProduct = await pool.query(`SELECT price, product_name, unit_available FROM product WHERE id=${product_id}`);
+                        if(!cartId){
+                                return {error:true, message:'Init the cart first before shopping.'}
+                        } 
+
+                        const priceSelectProduct = await pool.query(
+                                `SELECT price, product_name, unit_available FROM product WHERE id=${product_id}`);
                         // console.log(priceSelectProduct)
 
                         const priceSelectProductLength = priceSelectProduct.rows.length;
@@ -179,7 +185,7 @@ class Queries {
                         const unitInMerchant = priceSelectProduct.rows[0].unit_available;
                         // console.log(`UnitInMerchant: ${unitInMerchant}`)
 
-                        if (priceSelectProductLength <= 0 ) {
+                        if (priceSelectProductLength === 0 ) {
                                 return {error:true, message: 'Product id not found'};
                         }
                         else if (unitInMerchant < quantity) {
@@ -199,7 +205,7 @@ class Queries {
                                 // console.log('post fill product')
 
                                 return [
-                                        {error:false, message:`${quantity} ${product_name} added to cart. Temporary total cost is $${totalCost}`},
+                                        {error:false, message:`${quantity} ${product_name} added to cart and cost $${totalCost}`},
                                         this]
                                 }
                 }catch(err){
@@ -223,7 +229,7 @@ class Queries {
 
         async cartPreviewFromSchema() {
                 const {id} = this.schema.cartDetail;
-                // console.log(`sessionUserId: ${id}`);
+                console.log(`sessionUserId in Schema: ${id}`);
 
                 try {
                         const cartPreview = await pool.query(
@@ -235,13 +241,12 @@ class Queries {
                                 );
                         
                         let data = cartPreview.rows;
-                        // console.log(data);
+                        console.log(data);
 
                         let sum = Number(0);
 
                         let allCost = data.forEach(e => sum += Number(e.total_cost))
-                        // console.log(`allCost: ${sum}`);
-                        // console.log(this);
+                        console.log(`allCost: ${sum}`);
 
                         return {error: false, data:data, data2:sum};
                        
@@ -330,16 +335,7 @@ class Queries {
 
         async checkoutCartFromSchema() {
                 let {id, payment_method, pay_now} = this.schema.cartDetail;
-                console.log(`In Schema id-payment_method-pay_now: ${id}-${payment_method}-${pay_now}`);
-
-                //Promise the the asked method
-                const checkPreviewCart = await this.cartPreviewFromSchema()
-                        .then(data => {
-                                if(!data.error) {
-                                        return {orderList: data.data, total_cost: data.data2};
-                                } return;
-                        });
-                // console.log('after chaining method: ', checkPreviewCart);    
+                // console.log(`In Schema id-payment_method-pay_now: ${id}-${payment_method}-${pay_now}`);   
 
                 const checkCardAvailability = async() => {
                         
@@ -379,28 +375,49 @@ class Queries {
                                 return {credit_card:checkpayment.method, number:checkpayment.display};
                         } return checkpayment;
                 };
+
+                //Promise the the asked method
+                const checkPreviewCart = await this.cartPreviewFromSchema()
+                        .then(data => {
+                                if(!data.error) {
+                                        return {orderList: data.data, total_cost: data.data2};
+                                } return;
+                        });
+                // console.log('after chaining method: ', checkPreviewCart); 
           
                 payment = JSON.stringify(payment());
-                console.log(payment);
+                // console.log(payment);
                 let textTradeHistory = JSON.stringify(checkPreviewCart); 
-                console.log(textTradeHistory);
+                // console.log(textTradeHistory);
 
                 if(pay_now) {
                         try {
-                                console.log('pre')
+                                
                                 const insertTradeHistory = await pool.query(
                                         `INSERT INTO checkout_cart(payment_date, trade_history, user_id, currency, payment_method, status)
                                          VALUES(NOW(), '${textTradeHistory}', ${id},'usd', '${payment}', 'successful')`
                                          );
-                                console.log('post')
-                                return{error:false, message: "Thanks for the order and payment. Your order is in process."}; 
+                                
+                                return{error:false}; 
 
                         } catch(err) {
-                                console.log('preEr')
                                 return{error:false, message:err};
                         }
                 } return {error:false, message: 'Set "pay_now:true" in JSON format to purchase your order.'}
         };                 
+
+        async UninitializedCartFromSchema () {
+                const {id} = this.schema.cartDetail;
+                console.log(`id: ${id}`);
+
+                try{
+                        const uninitializedCart = await pool.query(`DELETE FROM initialize_cart WHERE session_user_id=${id}`)
+                        return {error:false, message:'Uninitializing cart successful.',
+                                checkout_branch:'Thanks for the order and payment. Your order is in process.'};
+                } catch(err) {
+                        return {error:true, message:'Can not uninitializing cart.'}
+                };
+        };
 };
 
 module.exports = Queries;
