@@ -70,11 +70,11 @@ const cartPreview = async(req,res) => {
 };
 
 const checkoutCart = async(req,res) => {
-        const {payment_method} = req.body;
+        const {payment_method,pay_now} = req.body;
         const {id} = req.session.user;
-        console.log(`userId-payment_method: ${id}-${payment_method}`);
+        console.log(`userId-payment_method-pay_now: ${id}-${payment_method}-${pay_now}`);
 
-        querySchema.cartDetail = {id, payment_method};
+        querySchema.cartDetail = {id, payment_method, pay_now};
         console.log(querySchema);
 
         cartQuery.checkoutCartFromSchema()
