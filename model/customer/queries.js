@@ -329,8 +329,8 @@ class Queries {
         };
 
         async checkoutCartFromSchema() {
-                let {id, payment_method} = this.schema.cartDetail;
-                console.log(`id-payment_method: ${id}-${payment_method}`);
+                let {id, payment_method, pay_now} = this.schema.cartDetail;
+                console.log(`In Schema id-payment_method-pay_now: ${id}-${payment_method}-${pay_now}`);
 
                 //Promise the the asked method
                 const checkPreviewCart = await this.cartPreviewFromSchema()
@@ -339,7 +339,7 @@ class Queries {
                                         return {orderList: data.data, total_cost: data.data2};
                                 } return;
                         });
-                console.log('after chaining method: ', checkPreviewCart);    
+                // console.log('after chaining method: ', checkPreviewCart);    
 
                 const checkCardAvailability = async() => {
                         
@@ -348,7 +348,14 @@ class Queries {
                                 );
 
                                 // console.log(checkCardAvailability);
-                                return checkCardAvailability.rows[0].method;
+
+                                const method = checkCardAvailability.rows[0].method;
+
+                                const cardNumber = checkCardAvailability.rows[0].card_number;
+                                const regexCardNumber = /[0-9](?=[0-9]{4})/g;
+                                const displayCardNumber = cardNumber.replace(regexCardNumber, '*');
+
+                                return {method:method, display:displayCardNumber};
                 };                
                         
 
@@ -367,12 +374,33 @@ class Queries {
                                 return {error:true, message: 'Accepted payment method: credit card, bank transfer, paypal.'}
                 };
 
-                console.log(checkpayment);
+                let payment = () => {
+                        if(typeof(checkpayment) === 'object') {
+                                return {credit_card:checkpayment.method, number:checkpayment.display};
+                        } return checkpayment;
+                };
+          
+                payment = JSON.stringify(payment());
+                console.log(payment);
+                let textTradeHistory = JSON.stringify(checkPreviewCart); 
+                console.log(textTradeHistory);
 
-                // const fillCheckoutCart = await pool.query(
-                //         `INSERT `)
+                if(pay_now) {
+                        try {
+                                console.log('pre')
+                                const insertTradeHistory = await pool.query(
+                                        `INSERT INTO checkout_cart(payment_date, trade_history, user_id, currency, payment_method, status)
+                                         VALUES(NOW(), '${textTradeHistory}', ${id},'usd', '${payment}', 'successful')`
+                                         );
+                                console.log('post')
+                                return{error:false, message: "Thanks for the order and payment. Your order is in process."}; 
+
+                        } catch(err) {
+                                console.log('preEr')
+                                return{error:false, message:err};
+                        }
+                } return {error:false, message: 'Set "pay_now:true" in JSON format to purchase your order.'}
+        };                 
 };
 
-       
-        }
 module.exports = Queries;
