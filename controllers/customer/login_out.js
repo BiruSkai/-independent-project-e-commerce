@@ -13,11 +13,8 @@ const loginUser = async(req, res) => {
                                 req.session.user = {id: data.id};
                                 req.session.authenticated = true;
                                 console.log(req.session);
-
-                                const admin = 'platform staff';
-                                if (data.userType === admin) {
-                                        return res.redirect('/admin/');
-                                } return res.send('Login successfully.');
+        
+                                return res.send('Login successfully.');
                         } else {
                                 res.status(403).send(data.message);
                         };
