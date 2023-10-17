@@ -387,17 +387,17 @@ class Queries {
           
                 payment = JSON.stringify(payment());
                 // console.log(payment);
+
                 let textTradeHistory = JSON.stringify(checkPreviewCart); 
                 // console.log(textTradeHistory);
 
                 if(pay_now) {
-                        try {
-                                
+                        try {   
                                 const insertTradeHistory = await pool.query(
                                         `INSERT INTO checkout_cart(payment_date, trade_history, user_id, currency, payment_method, status)
                                          VALUES(NOW(), '${textTradeHistory}', ${id},'usd', '${payment}', 'successful')`
-                                         );
-                                
+                                         );         
+                                console.log('post insertTradeHistory Schema')
                                 return{error:false}; 
 
                         } catch(err) {

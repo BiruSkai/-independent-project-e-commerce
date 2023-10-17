@@ -15,6 +15,21 @@ class Queries extends customerQueries {
                         return {error:true, message:`error: your query: ${adminQuery}`};
                 }
         };
-}
+
+        async deleteUserFromSchema() {
+                const {id} = this.schema.userDetails;
+                console.log(`schema-deleteUser_id: ${id}`);
+
+                try {
+                        const deleteUserData = await pool.query(`DELETE FROM user_data WHERE id=${id}`);
+                        console.log('post deleteUserData');
+
+                        return {error:false, message:'User has been deleted.'};
+                        
+                } catch(err) {
+                        return {error:true, message:err};
+                };
+        };
+};
 
 module.exports = Queries;
