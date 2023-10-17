@@ -16,7 +16,7 @@ const loginUser = async(req, res) => {
 
                                 const admin = 'platform staff';
                                 if (data.userType === admin) {
-                                        res.redirect('/admin/');
+                                        return res.redirect('/admin/');
                                 } return res.send('Login successfully.');
                         } else {
                                 res.status(403).send(data.message);

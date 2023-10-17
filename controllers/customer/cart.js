@@ -90,6 +90,7 @@ const checkoutCart = async(req,res) => {
         cartQuery.checkoutCartFromSchema()
         .then(data => {
                 if (!data.error){
+                        console.log('now loop to uniinit')
                         cartQuery.UninitializedCartFromSchema()
                         .then(data => {
                                 if(!data.error){

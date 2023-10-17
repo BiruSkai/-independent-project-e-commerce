@@ -34,13 +34,6 @@ app.use('/register_user', registerUserRouter);
 app.use('/user', userRouter);
 app.use('/products', productCategoryRouter);
 app.use('/cart', cartRouter);
-// app.use('/:category/products', categoryAllProductsRouter);
-// app.use('/stores/category/products', storesCategoryProductsRouter);
-// app.use('/stores', storesRouter);
-// app.use('/stores/:id/store_products', storeProductsRouter);
-
-// app.use('/users/:id/cart', userCartRouter);
-// app.use('/users/:id/history', userHistoryRouter);
 
 app.use((err, req, res, next) => {
         res.send(err.message);

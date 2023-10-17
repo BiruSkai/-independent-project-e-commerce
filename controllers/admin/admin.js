@@ -2,11 +2,11 @@ const Queries = require('../../model/admin/queries');
 const querySchema = {adminQuery:'', userDetails:''};
 const userQuery = new Queries(querySchema);
 
-const adminAuthenticate = async(req, res, next) => {
-        res.send('Welcome Admin');
-        next();
+const adminAuthenticate = async(req,res,next) => {
+        res.send("Welcome Admin.");
 };
 
+//Queryparams all userdata or useraddress
 const adminQuery = async (req, res) => {
         // query: user_data || user_address
         const {query} = req.params;
@@ -20,6 +20,7 @@ const adminQuery = async (req, res) => {
         });
 };
 
+//Query specific customer with their id for profile info
 const customerData = async(req, res) => {
         const {id} = req.query;
         console.log(`query id: ${id}`);
@@ -29,10 +30,11 @@ const customerData = async(req, res) => {
         .then( data => {
                 if(!data.error) {
                         return res.send(data.data);
-                } return res.send(data.message);
+                } return res.status(400).send(data.message);
         });
 };
 
+//Query specific customer with their id for address
 const customerAddress = async(req, res) => {
         const {id} = req.query;
         console.log(`query id: ${id}`);
@@ -42,21 +44,26 @@ const customerAddress = async(req, res) => {
         .then( data => {
                 if(!data.error) {
                         return res.send(data.data);
-                } return res.send(data.message);
+                } return res.status(400).send(data.message);
         });
 };
 
-// const deleteUserById = async(req,res) => {
-//         const {id} = req.body;
-//         querySchema.id = id;
-//         userQuery.deleteUserIdBySchema()
-//         .then( data => {
-//                 return res.send(data.message);
-//         });
-// };
+//Delete customer with their id 
+const deleteUserById = async(req,res) => {
+        const {id} = req.body;
+        console.log(`id: ${id}`)
 
-// module.exports = {allUsers,getUserById,updateUserById,deleteUserById};
+        querySchema.userDetails = {id};
+        console.log(querySchema);
+
+        userQuery.deleteUserFromSchema()
+        .then( data => {
+                if(!data.error) {
+                        return res.send(data.message);
+                } return res.status(400).send(data.message);
+        });
+};
 
 module.exports = {
-        adminAuthenticate, adminQuery, customerData, customerAddress
+        adminAuthenticate, adminQuery, customerData, customerAddress, deleteUserById
 }
