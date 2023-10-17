@@ -25,20 +25,20 @@ userRouter.post('/payment/card', checkIfAuthenticated, cardValidation);
 userRouter.delete('/payment/card', checkIfAuthenticated, deleteCard);
 
 const adminRouter = express.Router();
-adminRouter.get('/', adminAuthenticate);
-adminRouter.delete('/customer', checkIfAuthenticated, deleteUserById);
+adminRouter.post('/', adminAuthenticate);
+adminRouter.delete('/customer', checkIfAuthenticated, adminAuthenticate, deleteUserById);
 
 // customerData & customerAddress with req.query
-adminRouter.get('/customerData', checkIfAuthenticated, customerData);
-adminRouter.get('/customerAddress', checkIfAuthenticated, customerAddress);
+adminRouter.get('/customerData', checkIfAuthenticated, adminAuthenticate, customerData);
+adminRouter.get('/customerAddress', checkIfAuthenticated, adminAuthenticate, customerAddress);
 
 // The most general api request placed last
 // :query = userData || userAddress
-adminRouter.get('/:query', checkIfAuthenticated, adminQuery);
+adminRouter.get('/:query', checkIfAuthenticated, adminAuthenticate, adminQuery);
 
 //Product Category
 const productCategoryRouter = express.Router();
-productCategoryRouter.get('/categories', checkIfAuthenticated, productCategory);
+productCategoryRouter.get('/categories', productCategory);
 productCategoryRouter.get('/',  productsInCategory);
 productCategoryRouter.get('/:productName',  productInfo);
 

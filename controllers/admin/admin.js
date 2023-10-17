@@ -2,8 +2,15 @@ const Queries = require('../../model/admin/queries');
 const querySchema = {adminQuery:'', userDetails:''};
 const userQuery = new Queries(querySchema);
 
-const adminAuthenticate = async(req,res,next) => {
-        res.send("Welcome Admin.");
+const adminAuthenticate = async(req, res, next) => {
+        const adminId = Number(req.session.user.id);
+        console.log(adminId);
+        console.log(typeof adminId);
+
+        if(adminId === 3) {
+                console.log('welcome Admin');
+                return next();
+        } return res.status(400).send("This is only for admin.");
 };
 
 //Queryparams all userdata or useraddress
