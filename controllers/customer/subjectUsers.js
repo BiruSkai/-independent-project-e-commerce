@@ -3,8 +3,12 @@ const querySchema = { userDetails:''};
 const userQuery = new Queries(querySchema);
 
 const userData = async(req, res) => {
-        const {id} = req.params;
-        querySchema.id = id;
+        const sessionId = req.session.user.id;
+        // console.log(`sessionId: ${sessionId}`);
+
+        querySchema.userDetails = {sessionId};
+        // console.log(`querySchema: ${querySchema}`);
+
         userQuery.userDataFromSchema()
         .then( data => {
                 if(!data.error) {
@@ -14,21 +18,32 @@ const userData = async(req, res) => {
 };
 
 const updateUserData = async(req, res) => {
-        const {id} = req.params;
+        const sessionId = req.session.user.id;
         const {title,telephone,user_type,password} = req.body;
-        querySchema.userDetails = {id,title,telephone,user_type,password}
-       
-        userQuery.updateUserDataFromSchema()
-        .then( data => {
-                if(!data.error) {
-                        return res.send(data.message);
-                } return res.status(403).send({data:data.data, message:data.message});
-        });
+        // console.log(user_type)
+
+        if(user_type === 'buyer' || user_type === 'seller' || user_type === 'seller and buyer') {
+                querySchema.userDetails = {sessionId,title,telephone,user_type,password}
+                // console.log(querySchema.userDetails);
+
+                userQuery.updateUserDataFromSchema()
+                .then( data => {
+                        if(!data.error) {
+                                return res.send(data.message);
+                        } return res.status(403).send({data:data.data, message:data.message});
+                });                  
+        } else {
+                return res.send("User Type must be: 'buyer' || 'seller' || 'seller and buyer'");  
+        };
 };
 
 const userAddress = async(req, res) => {
-        const {id} = req.params;
-        querySchema.id = id;
+        const sessionId = req.session.user.id;
+        // console.log(`sessionId: ${sessionId}`);
+
+        querySchema.userDetails = {sessionId};
+        // console.log(`querySchema: ${querySchema}`);
+
         userQuery.userAddressFromSchema()
         .then( data => {
                 if(!data.error) {
@@ -38,12 +53,14 @@ const userAddress = async(req, res) => {
 };
 
 const updateUserAddress = async(req, res) => {
-        const {id} = req.params;
+        const sessionId = req.session.user.id;
         const {street_name,street_number} = req.body;
         const {postcode,city,province,country_code} = req.body;
+
         querySchema.userDetails = {
-                id, street_name, street_number,
+                sessionId, street_name, street_number,
                 postcode, city, province, country_code};
+        console.log(querySchema.userDetails);
 
         userQuery.updateUserAddressFromSchema()
         .then( data => {

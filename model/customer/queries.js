@@ -45,35 +45,66 @@ class Queries {
 
 //For subjectUsers.js
         async userDataFromSchema() {
-                const {id} = this.schema;
+                const {sessionId} = this.schema.userDetails;
+                // console.log(`schema-sessionId: ${sessionId}`);
+
                 try {
-                        const userDetail = await pool.query(`SELECT * FROM user_data WHERE id=${id}`);
+                        const userDetail = await pool.query(`SELECT * FROM user_data WHERE id=${sessionId}`);
+                        // console.log(userDetail.rows[0]);
+
                         return {error:false, data: userDetail.rows[0]};
                 } catch(err) {
 
-                        return {error:true, message:'Error occured.'};
+                        return {error:true, message:err};
                 };
         };
 
-        async userAddressFromSchema() {
-                const {id} = this.schema;
+        async updateUserDataFromSchema() {
+                const {sessionId,title,telephone,user_type,password} = this.schema.userDetails;
+                // console.log(sessionId,title,telephone,user_type,password)
+                
                 try {
-                        const userAddressDetail = await pool.query(`SELECT * FROM user_address WHERE user_id=${id}`);
+                        const salt = await bcrypt.genSalt();
+                        const hashedPass = await bcrypt.hash(password, salt);
+
+                        const updateUserData = await pool.query(
+                                `UPDATE user_data 
+                                SET title='${title}', telephone=${telephone}, user_type='${user_type}', 
+                                password='${hashedPass}', updated_on= NOW() 
+                                WHERE id=${sessionId}`
+                        );
+
+                        return {error:false, message: 'Userdata updated.'};
+                } catch (err) {
+                        return {error:true, message: "Userdata's update failed."};
+                };  
+        };
+
+        async userAddressFromSchema() {
+                const {sessionId} = this.schema.userDetails;
+                // console.log(`schema-sessionId: ${sessionId}`);
+
+                try {
+                        const userAddressDetail = await pool.query(`SELECT * FROM user_address WHERE user_id=${sessionId}`);
+                        // console.log(userAddressDetail.rows[0]);
+
                         return {error:false, data: userAddressDetail.rows[0]};
                 } catch(err) {
                         
-                        return {error:true, message:'Error occured.'};
+                        return {error:true, message:err};
                 };
         };
 
         async updateUserAddressFromSchema() {
-                const {id,street_name,street_number,postcode,city,province,country_code} = this.schema.userDetails;
+                const {sessionId,street_name,street_number,postcode,city,province,country_code} = this.schema.userDetails;
+                console.log(sessionId);
+
                 try {
                         
                         const updateUserAddressFromSchema = await pool.query(`
                                 UPDATE user_address SET street_name='${street_name}',street_number='${street_number}',
                                 postcode='${postcode}',city='${city}',province='${province}',
-                                country_code='${country_code}', updated_on = NOW() WHERE user_id=${id}`);
+                                country_code='${country_code}', updated_on = NOW() WHERE user_id=${sessionId}`);
 
                         return {error:false, message: "Useraddress updated."};
                 } catch (err) {
@@ -81,26 +112,13 @@ class Queries {
                 };  
         };
 
-        async updateUserDataFromSchema() {
-                const {id,title,telephone,user_type,password} = this.schema.userDetails;
-                
-                try {
-                        const salt = await bcrypt.genSalt();
-                        const hashedPass = await bcrypt.hash(password, salt);
-                        
-                        const updateUserDataFromSchema = await pool.query(`
-                                UPDATE user_data SET title='${title}',telephone=${telephone}, 
-                                user_type='${user_type}',password='${hashedPass}',updated_on=NOW() WHERE id=${id}`);
-                        
-                        return {error:false, message: 'Userdata updated.'};
-                } catch (err) {
-                        return {error:true, message: "Userdata's update failed."};
-                };  
-        };
+        
 
 // For Product Category
         async productCategoryFromSchema() {
                 const productCategory = await pool.query(`SELECT * FROM product_category`);
+                console.log(productCategory
+                        )
                 try{
                         return {error:false, data:productCategory.rows};
                 }catch(err){
@@ -108,9 +126,9 @@ class Queries {
                 };
         };
 
-        async categoryFromSchema() {
+        async productsInCategoryFromSchema() {
                 const {category} = this.schema;
-                console.log(`category: ${category}`);
+                // console.log(`category: ${category}`);
 
                 try{
                         const productsInCategory = await pool.query(`
@@ -118,12 +136,14 @@ class Queries {
                                 JOIN product_category AS pc
                                         ON pc.id = p.category_id
                                 WHERE pc.category_name='${category}'`)
+
+                        // console.log(productsInCategory)
                         const productsLength = productsInCategory.rows.length;
         
                         if(productsLength > 0){return {error:false, data:productsInCategory.rows}};
                         return {error:true, message:'Category or Product unavailable'} 
                 }catch(err){
-                        return {error:true, message:'Error catched'};
+                        return {error:true, message:err};
                 };
         };
 

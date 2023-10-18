@@ -29,11 +29,13 @@ const adminQuery = async (req, res) => {
 
 //Query specific customer with their id for profile info
 const customerData = async(req, res) => {
-        const {id} = req.query;
-        console.log(`query id: ${id}`);
+        const {customerId} = req.query;
+        console.log(`query customerId: ${customerId}`);
         
-        querySchema.id = id;
-        userQuery.userDataFromSchema()
+        querySchema.userDetails = {customerId};
+        console.log(querySchema);
+
+        userQuery.customerDataFromSchema()
         .then( data => {
                 if(!data.error) {
                         return res.send(data.data);
@@ -43,11 +45,13 @@ const customerData = async(req, res) => {
 
 //Query specific customer with their id for address
 const customerAddress = async(req, res) => {
-        const {id} = req.query;
-        console.log(`query id: ${id}`);
+        const {customerId} = req.query;
+        // console.log(`customerId: ${customerId}`);
         
-        querySchema.id = id;
-        userQuery.userAddressFromSchema()
+        querySchema.userDetails = {customerId};
+        // console.log(querySchema);
+
+        userQuery.customerAddressFromSchema()
         .then( data => {
                 if(!data.error) {
                         return res.send(data.data);
@@ -57,10 +61,10 @@ const customerAddress = async(req, res) => {
 
 //Delete customer with their id 
 const deleteUserById = async(req,res) => {
-        const {id} = req.body;
-        console.log(`id: ${id}`)
+        const {delete_id} = req.query;
+        console.log(`delete_id: ${delete_id}`)
 
-        querySchema.userDetails = {id};
+        querySchema.userDetails = {delete_id};
         console.log(querySchema);
 
         userQuery.deleteUserFromSchema()

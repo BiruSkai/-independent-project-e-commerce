@@ -18,7 +18,7 @@ const productsInCategory = async(req, res) => {
         const {category} = req.query;
         querySchema.category = category;
 
-        userQuery.categoryFromSchema()
+        userQuery.productsInCategoryFromSchema()
         .then(data => {
                 if(!data.error) {
                         return res.send(data.data);
