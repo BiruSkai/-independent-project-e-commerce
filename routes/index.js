@@ -1,34 +1,19 @@
 const express = require('express');
-const {registerUser} = require('../controllers/customer/register');
+//Admin
 const {adminAuthenticate, adminQuery, customerData, customerAddress, deleteUserById} = require('../controllers/admin/admin');
+//General
+const {registerUser} = require('../controllers/customer/register');
 const {loginUser, checkIfAuthenticated, logoutUser} = require('../controllers/customer/login_out');
 const {userData, userAddress, updateUserAddress, updateUserData} = require('../controllers/customer/subjectUsers');
 const {productCategory, productsInCategory, productInfo} = require('../controllers/customer/productCategory');
 const {initializeCart, chosenProduct,deleteChosenProduct,cartPreview, checkoutCart} = require('../controllers/customer/cart');
 const {cardValidation, deleteCard} = require('../controllers/customer/payment');
 
-const loginRouter = express.Router();
-loginRouter.post('/', loginUser,adminAuthenticate);
-
-const logoutRouter = express.Router();
-logoutRouter.get('/', logoutUser);
-
-const registerUserRouter = express.Router();
-registerUserRouter.post('/', registerUser);
-
-const userRouter = express.Router();
-userRouter.get('/data/:id', checkIfAuthenticated, userData);
-userRouter.put('/data/:id', checkIfAuthenticated, updateUserData);
-userRouter.get('/address/:id', checkIfAuthenticated, userAddress);
-userRouter.put('/address/:id', checkIfAuthenticated, updateUserAddress);
-userRouter.post('/payment/card', checkIfAuthenticated, cardValidation);
-userRouter.delete('/payment/card', checkIfAuthenticated, deleteCard);
-
+//Admin
 const adminRouter = express.Router();
-adminRouter.post('/', adminAuthenticate);
 adminRouter.delete('/customer', checkIfAuthenticated, adminAuthenticate, deleteUserById);
 
-// customerData & customerAddress with req.query
+// customerData & customerAddress with req.query {id}
 adminRouter.get('/customerData', checkIfAuthenticated, adminAuthenticate, customerData);
 adminRouter.get('/customerAddress', checkIfAuthenticated, adminAuthenticate, customerAddress);
 
@@ -36,13 +21,34 @@ adminRouter.get('/customerAddress', checkIfAuthenticated, adminAuthenticate, cus
 // :query = userData || userAddress
 adminRouter.get('/:query', checkIfAuthenticated, adminAuthenticate, adminQuery);
 
-//Product Category
+/*--------------------------------------------------- */
+//General
+const loginRouter = express.Router();
+loginRouter.post('/', loginUser);
+
+const logoutRouter = express.Router();
+logoutRouter.get('/', logoutUser);
+
+const registerUserRouter = express.Router();
+registerUserRouter.post('/', registerUser);
+
+/*----------------------------------------------------*/
+//User
+const userRouter = express.Router();
+userRouter.get('/data', checkIfAuthenticated, userData);
+userRouter.put('/data', checkIfAuthenticated, updateUserData);
+userRouter.get('/address', checkIfAuthenticated, userAddress);
+userRouter.put('/address', checkIfAuthenticated, updateUserAddress);
+
+//User Payment
+userRouter.post('/payment/card', checkIfAuthenticated, cardValidation);
+userRouter.delete('/payment/card', checkIfAuthenticated, deleteCard);
+
 const productCategoryRouter = express.Router();
 productCategoryRouter.get('/categories', productCategory);
 productCategoryRouter.get('/',  productsInCategory);
 productCategoryRouter.get('/:productName',  productInfo);
 
-//Cart
 const cartRouter = express.Router();
 cartRouter.get('/initCart', checkIfAuthenticated, initializeCart);
 cartRouter.get('/cartPreview', checkIfAuthenticated, cartPreview);

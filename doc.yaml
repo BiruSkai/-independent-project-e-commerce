@@ -7,249 +7,21 @@ info:
     email: 1nikolaus.albert1@gmail.com
     name: Nikolaus Albert
 paths:
-  /login:
-    summary: Login a user with email and password
-    post:
-      summary: Login user
-      description: ''
-      operationId: login_user
-      requestBody:
-        description: An object containing the user's password and email
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Login'
-              
-      responses:
-        '200':
-          description: Success
-          content:
-            text/plain; charset=utf-8:
-              examples:
-                Successful response:
-                  value: Login successful
-        '400':
-          description: Failed to login
-          content:
-            text/plain; charset=utf-8:
-              examples:
-                Failed response email:
-                  value: email not found
-                Failed response password:
-                  value: password not matched
-      tags:
-        - login
-  /logout:
-    summary: Logout account
+  /admin/{query}:
     get:
-      summary: Logs out user
-      description: ''
-      operationId: logout_user
-      responses:
-        default:
-          description: Success
-          content:
-            text/plain; charset=utf-8:
-              examples:
-                Successful response:
-                  value: Logout successful
-      tags:
-        - logout
-  /register_user:
-    summary: Register a new user account
-    post:
-      summary: Register a new user account
-      description: ''
-      operationId: register_newUser
-      requestBody:
-        description: An object containing the user's credentials
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RegisterUser'
-      responses:
-        '201':
-          description: Success
-          content:
-            text/plain; charset=utf-8:
-              examples:
-                Successful response:
-                  value: Registration succeed
-                Failed response (similar email):
-                  value: Similar email found in db. Please try another email
-                Other failed response:
-                  value: Problem occurred 
-      tags:
-        - users
-  /users:
-    summary: Get all users
-    get:
-      summary: 'Get all users'
-      description: only for platform staff
-      operationId: get_users
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              examples:
-                Success response:
-                  value: |
-                    [{
-                        "id": 3,
-                        "title": "Msc",
-                        "fullname": "Zeus Thunder",
-                        "gender": "male",
-                        "birth_date": "1990-03-03",
-                        "email": "zeus.t@email.com",
-                        "telephone": 123456,
-                        "user_type": "plattform staff",
-                        "created_at": "2023-09-26T10:38:56.325734"
-                    },
-                    {
-                        "id": 4,
-                        "title": "",
-                        "fullname": "Mira Kin",
-                        "gender": "female",
-                        "birth_date": "1989-03-23",
-                        "email": "mira.kin@email.com",
-                        "telephone": 134567,
-                        "user_type": "seller",
-                        "created_at": "2023-09-26T10:38:56.325734"
-                    }]
-      tags:
-        - users
-  /user/data/{id}:
-    parameters:
-      - in: path
-        name: id
-        description: this is user id
-        schema:
-          type: string
-          example: 3
-        required: true
-    
-    get:
-      summary: get general user detail
-      description: ''
-      operationId: get_genUser
-      responses:
-        '200':
-          description: Default error sample response
-          content:
-            application/json:
-              examples:
-                Success response for endpoint users/3:
-                  value: |
-                    {"id": 3,
-                        "title": "Msc",
-                        "fullname": "Zeus Thunder",
-                        "gender": "male",
-                        "birth_date": "1990-03-03",
-                        "email": "zeus.t@email.com",
-                        "telephone": 123456,
-                        "user_type": "plattform staff",
-                        "created_at": "2023-09-26T10:38:56.325734"
-                    }
-      tags:
-        - users
-    put:
-      summary: update general user detail
-      description: ''
-      operationId: update_genUser
-      requestBody:
-        description: An object containing the user's data
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/putGenUser'
-      responses:
-        '200':
-          content:
-            text/plain; charset=utf-8:
-              examples:
-                Success response:
-                  value: Success
-          description: Success
-        '400':
-          content:
-            text/plain; charset=utf-8:
-              examples:
-                Message:
-                  value: Userdata's update failed.
-          description: Invalid argument
-      tags:
-        - users
-
-/user/address/{id}:
-  parameters:
-    - in: path
-      name: id
-      description: this is user id
-      schema:
-        type: string
-        example: 3
-      required: true
-  
-  get:
-    summary: get the address of a user by id 
-    description: ''
-    operationId: get_addressUser
-    responses:
-      '200':
-        description: Default error sample response
-        content:
-          application/json:
-            examples:
-              Success response for endpoint users/3:
-                value: |
-                  {
-                      "id": "2",
-                      "user_id": 4,
-                      "street_name": "Jln.Karapitan",
-                      "street_number": 33,
-                      "postcode": 12324,
-                      "city": "Bandung",
-                      "province": "West Java",
-                      "country_code": "id",
-                      "updated_on": null
-                  }
-    tags:
-      - users
-  put:
-    summary: update the addres of a user by id 
-    description: ''
-    operationId: update_addressUser
-    requestBody:
-      description: An object containing the user's data
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/putAddressUser'
-    responses:
-      '200':
-        content:
-          text/plain; charset=utf-8:
-            examples:
-              Success response:
-                value: Success
-        description: Success
-      '400':
-        content:
-          text/plain; charset=utf-8:
-            examples:
-              Message:
-                value: Useraddress's update failed.
-        description: Invalid argument.
-    tags:
-      - users
-
-  admin/{query}:
-    summary: filled with table's name (user_data || user_address)
-    get:
-      summary: Get all detail from a related table
+      summary: Get all users's detail from a related table
       description: only for platform staff
       operationId: admin_query
+      parameters:
+      - name: query
+        in: path
+        description: filled with "user_data" || "user_address"
+        required: true
+        schema:
+          type: string
+          enum:
+            - user_data
+            - user_address
       responses:
         '200':
           description: Success
@@ -286,368 +58,339 @@ paths:
             application/json:
               examples:
                 Failed response:
-                  value: Table not found
+                  value: error, your query {query}
+      tags:
+        - admin
+  
+  /admin/customerData:
+    get:
+      summary: get general user detail by their id 
+      description: ''
+      operationId: adminGet_userData
+      parameters:
+        - in: query
+          name: customerId
+          schema:
+            type: integer
+          required: true
+      responses: 
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Success response:
+                  value: Success
+        '400':
+          description: Failed
+          content:
+            application/json:
+              examples:
+                Failed response:
+                  value: Error
       tags:
         - admin
 
-  /admin/customerData?id={id}:
-    parameters:
-      - in: path
-        name: id
-        description: this is user id
-        schema:
-          type: string
-          example: 3
-        required: true
-    
+  /admin/customerAddress:
     get:
-      summary: get the gen detail of a user by id 
+      summary: get the address of a user by their id 
+      description: ''
+      operationId: adminGet_userAddress
+      parameters:
+        - in: query
+          name: customerId
+          schema:
+            type: integer
+          required: true
+      responses: 
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Success response:
+                  value: Success
+        '400':
+          description: Failed
+          content:
+            application/json:
+              examples:
+                Failed response:
+                  value: Error
+      tags:
+        - admin
+
+  /admin/customer:
+    delete:
+      summary: delete customer by their id 
+      description: ''
+      operationId: adminDelete_customer
+      parameters:
+        - in: query
+          name: delete_id
+          schema:
+            type: integer
+          required: true
+      responses: 
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                Success response:
+                  value: User has been deleted
+        '400':
+          description: Failed
+          content:
+            application/json:
+              examples:
+                Failed response:
+                  value: Error
+      tags:
+        - admin
+  
+  /login:
+    summary: Login a user with email and password
+    post:
+      summary: Login user
+      description: ''
+      operationId: login_user
+      requestBody:
+        description: An object containing the user's password and email
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+              
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Successful response:
+                  value: Login successful
+        '400':
+          description: Failed to login
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Failed response email:
+                  value: email not found
+                Failed response password:
+                  value: password not matched
+      tags:
+        - general
+  /logout:
+    summary: Logout account
+    get:
+      summary: Logs out user
+      description: ''
+      operationId: logout_user
+      responses:
+        default:
+          description: Success
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Successful response:
+                  value: Logout successful
+      tags:
+        - general
+  /register_user:
+    summary: Register a new user account
+    post:
+      summary: Register a new user account
+      description: ''
+      operationId: register_newUser
+      requestBody:
+        description: An object containing the user's credentials
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUser'
+      responses:
+        '201':
+          description: Success
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Successful response:
+                  value: Registration succeed
+                Failed response (similar email):
+                  value: Similar email found in db. Please try another email
+                Other failed response:
+                  value: Problem occurred 
+      tags:
+        - general
+
+  /user/data:
+    get:
+      summary: get general user detail based on session id
       description: ''
       operationId: get_genUser
-      responses: 
+      responses:
         '200':
+          description: Default error sample response
+          content:
+            application/json:
+              examples:
+                Success response for endpoint users/3:
+                  value: |
+                    {   "id": 3,
+                        "title": "Msc",
+                        "fullname": "Zeus Thunder",
+                        "gender": "male",
+                        "birth_date": "1990-03-03",
+                        "email": "zeus.t@email.com",
+                        "telephone": 123456,
+                        "user_type": "plattform staff",
+                        "created_at": "2023-09-26T10:38:56.325734"
+                    }
+      tags:
+        - users
+    put:
+      summary: update general user detail
+      description: ''
+      operationId: update_genUser
+      requestBody:
+        description: An object containing the user's data
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/putGenUser"
+      responses:
+        '200':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Success response:
+                  value: Success
           description: Success
-            content:
-              application/json:
-                examples:
-                  Success response:
-                    value: Success
         '400':
-          description: Failed
-            content:
-              application/json:
-                examples:
-                  Failed response:
-                    value: Error
-        tags:
-          -admin
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Userdata's update failed.
+          description: Invalid argument
+      tags:
+        - users
 
-  /admin/customerAddress?id={id}:
-    parameters:
-      - in: path
-        name: id
-        description: this is user id
-        schema:
-          type: string
-          example: 3
-        required: true
+  /user/address:
     get:
-      summary: get the address of a user by id 
+      summary: get the address of a user based on session id
       description: ''
       operationId: get_addressUser
-      responses: 
+      responses:
         '200':
+          description: Default error sample response
+          content:
+            application/json:
+              examples:
+                Success response for endpoint users/3:
+                  value: |
+                    {
+                        "id": "2",
+                        "user_id": 4,
+                        "street_name": "Jln.Karapitan",
+                        "street_number": 33,
+                        "postcode": 12324,
+                        "city": "Bandung",
+                        "province": "West Java",
+                        "country_code": "id",
+                        "updated_on": null
+                    }
+      tags:
+        - users
+    put:
+      summary: update the address of a user based on session id
+      description: ''
+      operationId: update_addressUser
+      requestBody:
+        description: An object containing the user's data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/putAddressUser'
+      responses:
+        '200':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Success response:
+                  value: Success
           description: Success
-            content:
-              application/json:
-                examples:
-                  Success response:
-                    value: Success
         '400':
-          description: Failed
-            content:
-              application/json:
-                examples:
-                  Failed response:
-                    value: Error
-        tags:
-          -admin
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Useraddress's update failed.
+          description: Invalid argument.
+      tags:
+        - users
+        
+  /user/payment/card:
+    post:
+      summary: create credit card detail as payment method
+      description: ''
+      operationId: post_userCard
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postCard'
+      responses:
+        '200':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Success response:
+                  value: card has been saved
+          description: card has been saved
+        '400':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Failed response 1:
+                  value: card not authentic and not saved
+                Failed response 2:
+                  value: error
+          description: Invalid argument.
+      tags:
+        - payment
+        
+    delete:
+      summary: delete credit card based on session user id
+      description: ''
+      operationId: delete_userCard
+      responses:
+        '200':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Success response:
+                  value: Card has been deleted.
+          description: ok
+        '400':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Failed response :
+                  value: error
+          description: err
 
-  # /stores:
-  #   summary: Get all stores
-  #   get:
-  #     summary: get all stores
-  #     description: for platform staff
-  #     operationId: get_stores
-  #     responses:
-  #       '200':
-  #         description: Success
-  #         content:
-  #           application/json:
-  #             examples:
-  #               Success response:
-  #                 value: |-
-  #                   [
-  #                       {
-  #                           "id": 1,
-  #                           "admin_id": 4,
-  #                           "name": "Tech Master Co.",
-  #                           "description": "Selling top notch quality of electronics with affordable price",
-  #                           "created_at": "2023-09-26T11:31:53.558105"
-  #                       },
-  #                       {
-  #                           "id": 2,
-  #                           "admin_id": 7,
-  #                           "name": "YDS",
-  #                           "description": "Providing your daily needs of dress both casual and proffessional",
-  #                           "created_at": "2023-09-26T11:31:53.558105"
-  #                       }
-  #                   ]
-  #     tags:
-  #       - stores
-  # /stores/register:
-  #   summary: Register new store
-  #   post:
-  #     summary: Register new store
-  #     description: ''
-  #     operationId: register_store
-  #     requestBody:
-  #       description: An object containing name and description of a store
-  #       content:
-  #         application/json:
-  #           schema:
-  #             $ref: '#/components/schemas/StoresRegister'
-  #     responses:
-  #       '201':
-  #         description: Success
-  #         content:
-  #           application/json:
-  #             examples:
-  #               Success Response:
-  #                 value: |2-
-  #                    {
-  #                           "id": 1,
-  #                           "admin_id": 4,
-  #                           "name": "Tech Master Co.",
-  #                           "description": "Selling top notch quality of electronics with affordable price",
-  #                           "created_at": "2023-09-26T11:31:53.558105"
-  #                       }
-  #       '400':
-  #         description: Failed
-  #         content:
-  #           text/plain; charset=utf-8:
-  #             examples:
-  #               Failed Response:
-  #                 value: Invalid argument.
-  #     tags:
-  #       - stores
-  # /stores/{id}:
-  #   parameters:
-  #     - in: path
-  #       name: id
-  #       description: Id of a store
-  #       schema:
-  #         type: string
-  #         example: 1
-  #       required: true        
-      
-  #   get:
-  #     summary: Get a store detail
-  #     description: ''
-  #     operationId: get_store
-  #     responses:
-  #       '200':
-  #         description: Success
-  #         content:
-  #           application/json:
-  #             examples:
-  #               Message:
-  #                 value: |2-
-  #                    {
-  #                           "id": 1,
-  #                           "admin_id": 4,
-  #                           "name": "Tech Master Co.",
-  #                           "description": "Selling top notch quality of electronics with affordable price",
-  #                           "created_at": "2023-09-26T11:31:53.558105"
-  #                       }
-  #       '400':
-  #         description: Failed
-  #         content:
-  #           text/plain; charset=utf-8:
-  #             examples:
-  #               Message:
-  #                 value: Invalid argument
-  #     tags:
-  #       - stores
-  
-  #   put:
-  #     summary: Update store detail
-  #     description: ''
-  #     operationId: update_store
-  #     requestBody:
-  #       description: An object containing the store's data
-  #       content:
-  #         application/json:
-  #           schema:
-  #             $ref: '#/components/schemas/StoresIdPut'
-  #     responses:
-  #       '200':
-  #         description: Success
-  #         content:
-  #           text/plain; charset=utf-8:
-  #             examples:
-  #               Message:
-  #                 value: Success
-  #       '400':
-  #         description: Failed
-  #         content:
-  #           text/plain; charset=utf-8:
-  #             examples:
-  #               Message:
-  #                 value: Invalid argument
-  #     tags:
-  #       - stores
-  
-  #   delete:
-  #     summary: delete store
-  #     description: ''
-  #     operationId: delete_store
-  #     responses:
-  #       '200':
-  #         description: Success
-  #         content:
-  #           text/plain; charset=utf-8:
-  #             examples:
-  #               Message:
-  #                 value: Success
-  #       '400':
-  #         description: Failed
-  #         content:
-  #           text/plain; charset=utf-8:
-  #             examples:
-  #               Message:
-  #                 value: Invalid argument
-  #     tags:
-  #       - stores
-        
-  # /stores/{id}/store_products:
-  #   parameters:
-  #     - in: path
-  #       name: id
-  #       description: id of a store
-  #       schema:
-  #         type: string
-  #       required: true
-    
-  #   get :
-  #     summary: Show all products in a store
-  #     description: ''
-  #     operationId: store_product
-  #     responses:
-  #       '200':
-  #         description: Success
-  #         content:
-  #           application/json:
-  #             examples:
-  #               Message:
-  #                 value:
-  #                   [
-  #                     {
-  #                       "id": 1,
-  #                       "category_id": 1,
-  #                       "merchant_id": 1,
-  #                       "name": "Samsung X10",
-  #                       "price": "US",
-  #                       "unit_available": 100,
-  #                       "created_at": "2023-09-26T11:55:39.560512"
-  #                     },
-  #                     {
-  #                       "id": 2,
-  #                       "category_id": 3,
-  #                       "merchant_id": 1,
-  #                       "name": "Xi s4",
-  #                       "price": "Rp",
-  #                       "unit_available": 200,
-  #                       "created_at": "2023-09-26T11:55:39.560512"
-  #                     }
-  #                 ]
-  #       '400':
-  #         description: Failed
-  #         content:
-  #           text/plain; charset=utf-8:
-  #             examples:
-  #               Message:
-  #                 value: Invalid argument
-  #     tags:
-  #     - store_product
-      
-  #   post:
-  #     summary: Add new product in a store
-  #     description: ''
-  #     operationId: add_product
-  #     requestBody:
-  #       description: An object containing the product's data(name, unit available, price)
-  #       content:
-  #         application/json:
-  #           schema:
-  #             $ref: '#/components/schemas/StoreProductPost'
-  #     responses:
-  #       '201':
-  #         description: Success
-  #         content:
-  #           text/plain; charset=utf-8:
-  #             examples:
-  #               Message:
-  #                 value: Success
-  #       '400':
-  #         description: Failed
-  #         content:
-  #           text/plain; charset=utf-8:
-  #             examples:
-  #               Message:
-  #                 value: Invalid argument
-          
-  #     tags:
-  #       - store_product
-        
-  #   put:
-  #     summary: Update product in a store
-  #     description: ''
-  #     operationId: update_product
-  #     requestBody:
-  #       description: An object containing the product's data(name, unit available, price)
-  #       content:
-  #         application/json:
-  #           schema:
-  #             $ref: '#/components/schemas/StoreProductPut'
-  #     responses:
-  #       '200':
-  #         description: Success
-  #         content:
-  #           text/plain; charset=utf-8:
-  #             examples:
-  #               Message:
-  #                 value: Success
-  #       '400':
-  #         description: Failed
-  #         content:
-  #           text/plain; charset=utf-8:
-  #             examples:
-  #               Message:
-  #                 value: Invalid argument
-          
-  #     tags:
-  #       - store_product
-  
-  #   delete:
-  #     summary: Delete product in a store
-  #     description: ''
-  #     operationId: delete_product
-  #     responses:
-  #       '201':
-  #         description: Success
-  #         content:
-  #           text/plain; charset=utf-8:
-  #             examples:
-  #               Message:
-  #                 value: Success
-  #       '400':
-  #         description: Failed
-  #         content:
-  #           text/plain; charset=utf-8:
-  #             examples:
-  #               Message:
-  #                 value: Invalid argument
-          
-  #     tags:
-  #       - store_product
+      tags:
+        - payment
         
   /products/categories:
-    summary: Get all categories of product
     get:
       summary: Get all categories of product
       description: ''
-      operationId: get_categories
+      operationId: get_categories 
       responses:
         '200':
           description: Success
@@ -674,28 +417,27 @@ paths:
                       }
                     ]
       tags:
-        - categories
+        - productCategories
         
-  /products?category={category}:
-    parameters:
-      - in: path
-        name: category
-        description: type a category of a product in query
-        schema:
-          type: string
-        required: true
-        
+  /products:
     get:
+      parameters:
+        - in: query
+          name: category
+          description: type a product's category 
+          schema:
+            type: string
+          required: true
       summary: Get all products in a category
       description: ''
-      operationId: Get products of a category
+      operationId: getProducts_inCategory
       responses:
         '200':
           description: Success
           content:
             application/json:
               examples:
-                Message:
+                success response:
                   value:
                     [{
                         "id": 1,
@@ -721,149 +463,114 @@ paths:
           content:
             text/plain; charset=utf-8:
               examples:
-                Message:
-                  value: Category or Product unavailable
+                failed response:
+                    value: Category or Product unavailable
       tags:
-        - categories
+        - productCategories
 
-/products/{productName}:
-parameters:
-  - in: path
-    name: category
-    description: type a name of a product
-    schema:
-      type: string
-    required: true
-    
-get:
-  summary: Get information of the product
-  description: ''
-  operationId: get_productInfo
-  responses:
-    '200':
-      description: Success
-      content:
-        application/json:
-          examples:
-            Message:
-              value:
-                  {
-                    "id": "4",
-                    "category_id": 18,
-                    "merchant_id": 3,
-                    "product_name": "Aqua",
-                    "unit_available": 500,
-                    "created_at": "2023-09-26T04:55:39.560Z",
-                    "price": "0.3"
-                  }
+  /products/{productName}:
+    get:
+      parameters:
+        - in: path
+          name: productName
+          description: type a name of a product
+          schema:
+            type: string
+          required: true
+      summary: Get information of the product
+      description: ''
+      operationId: get_productInfo
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                success resposnse:
+                  value:
+                      {
+                        "id": "4",
+                        "category_id": 18,
+                        "merchant_id": 3,
+                        "product_name": "Aqua",
+                        "unit_available": 500,
+                        "created_at": "2023-09-26T04:55:39.560Z",
+                        "price": "0.3"
+                      }
+          
+        '400':
+          description: Failed
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                failed response:
+                  value: Product info unavailable or failure on writting the product's alphabet
+      tags:
+        - productCategories
       
-    '400':
-      description: Failed
-      content:
-        text/plain; charset=utf-8:
-          examples:
-            Message:
-              value: Product unavailable or spelling mistake
-  tags:
-    - categories
-        
-  # /stores/category/products:
-  #   get:
-  #     summary: Get a product detail in a store and category
-  #     description: ''
-  #     operationId: get_product
-  #     responses:
-  #       '200':
-  #         description: Success
-  #         content:
-  #           application/json:
-  #             examples:
-  #               Messages:
-  #                 value:  
-  #                   {
-  #                       "id": 1,
-  #                       "category_id": 1,
-  #                       "merchant_id": 1,
-  #                       "name": "Samsung X10",
-  #                       "price": "US",
-  #                       "unit_available": 100,
-  #                       "created_at": "2023-09-26T11:55:39.560512"
-  #                   }
-  #       '400':
-  #         description: Failed
-  #         content:
-  #           text/plain; charset=utf-8:
-  #             examples:
-  #               Message:
-  #                 value: Invalid argument
-  #     tags:
-  #       - stores
- 
- 
-      
-  # /users/{id}/cart:
-  #   parameters:
-  #     - in: path
-  #       name: id
-  #       description: id of a user
-  #       schema:
-  #         type: string
-  #       required: true
+  /users/{id}/cart:
+    parameters:
+      - in: path
+        name: id
+        description: id of a user
+        schema:
+          type: string
+        required: true
     
-  #   get:
-  #     summary: Get cart details of a user
-  #     description: ''
-  #     operationId: get_cart
-  #     responses:
-  #       '200':
-  #         description: Success
-  #         content:
-  #           text/plain; charset=utf-8:
-  #             examples:
-  #               Message:
-  #                 value: Success
-  #     tags:
-  #       - cart
+    get:
+      summary: Get cart details of a user
+      description: ''
+      operationId: get_cart
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Success
+      tags:
+        - cart
         
-  # /users/{id}/history:
-  #   parameters:
-  #     - in: path
-  #       name: id
-  #       description: id of a user
-  #       schema:
-  #         type: string
-  #       required: true
+  /users/{id}/history:
+    parameters:
+      - in: path
+        name: id
+        description: id of a user
+        schema:
+          type: string
+        required: true
         
-  #   get:
-  #     summary: Get successful history of trades from a user
-  #     description: ''
-  #     operationId: history_trades
-  #     responses:
-  #       '200':
-  #         description: Success
-  #         content:
-  #           text/plain; charset=utf-8:
-  #             examples:
-  #               Option 1:
-  #                 value: 
-  #                   [
-  #                     {
-  #                         "user_id": 5,
-  #                         "order_id": 1,
-  #                         "created_on": "2023-09-26T12:06:49.029898",
-  #                         "payment": "successful"
-  #                     },
-  #                     {
-  #                         "user_id": 5,
-  #                         "order_id": 6,
-  #                         "created_on": "2023-09-29T12:34:25.12761",
-  #                         "payment": "successful"
-  #                     }
-  #                 ]
-  #               Option 2:
-  #                 value: No history trade
-  #     tags:
-  #       - cart
+    get:
+      summary: Get successful history of trades from a user
+      description: ''
+      operationId: history_trades
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Option 1:
+                  value: 
+                    [
+                      {
+                          "user_id": 5,
+                          "order_id": 1,
+                          "created_on": "2023-09-26T12:06:49.029898",
+                          "payment": "successful"
+                      },
+                      {
+                          "user_id": 5,
+                          "order_id": 6,
+                          "created_on": "2023-09-29T12:34:25.12761",
+                          "payment": "successful"
+                      }
+                  ]
+                Option 2:
+                  value: No history trade
+      tags:
+        - cart
         
 components:
   schemas:
@@ -898,11 +605,11 @@ components:
       properties:
         title:
           type: string
-        password:
-          type: string
         telephone:
           type: integer
         user_type:
+          type: string
+        password:
           type: string
     putAddressUser:
       type: object
@@ -919,35 +626,11 @@ components:
           type: string
         country_code:
           type: string
-    # StoresRegister:
-    #   type: object
-    #   properties:
-    #     name:
-    #       type: string
-    #     description:
-    #       type: string
-    # StoresIdPut:
-    #   type: object
-    #   properties:
-    #     name:
-    #       type: string
-    #     description:
-    #       type: string
-    # StoreProductPost:
-    #   type: object
-    #   properties:
-    #     name:
-    #       type: string
-    #     unit_available:
-    #       type: integer
-    #     price:
-    #       type: integer
-    # StoreProductPut:
-    #   type: object
-    #   properties:
-    #     name:
-    #       type: string
-    #     unit_available:
-    #       type: integer
-    #     price:
-    #       type: integer
+    postCard:
+      type: object
+      properties:
+        method:
+          type: string
+        creditCardNumber:
+          type: number
+   

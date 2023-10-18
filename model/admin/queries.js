@@ -16,12 +16,42 @@ class Queries extends customerQueries {
                 }
         };
 
-        async deleteUserFromSchema() {
-                const {id} = this.schema.userDetails;
-                console.log(`schema-deleteUser_id: ${id}`);
+        async customerDataFromSchema() {
+                const {customerId} = this.schema.userDetails;
+                console.log(`schema-customerId: ${customerId}`);
 
                 try {
-                        const deleteUserData = await pool.query(`DELETE FROM user_data WHERE id=${id}`);
+                        const customerData = await pool.query(`SELECT * FROM user_data WHERE id=${customerId}`);
+                        console.log(customerData.rows[0]);
+
+                        return {error:false, data: customerData.rows[0]};
+                } catch(err) {
+
+                        return {error:true, message:err};
+                };
+        };
+
+        async customerAddressFromSchema() {
+                const {customerId} = this.schema.userDetails;
+                console.log(`customerId: ${customerId}`);
+
+                try {
+                        const customerAddressDetail = await pool.query(`SELECT * FROM user_address WHERE user_id=${customerId}`);
+                        // console.log(customerAddressDetail.rows[0]);
+
+                        return {error:false, data: customerAddressDetail.rows[0]};
+                } catch(err) {
+                        
+                        return {error:true, message:err};
+                };
+        };
+
+        async deleteUserFromSchema() {
+                const {delete_id} = this.schema.userDetails;
+                console.log(`schema-delete_id: ${delete_id}`);
+
+                try {
+                        const deleteUserData = await pool.query(`DELETE FROM user_data WHERE id=${delete_id}`);
                         console.log('post deleteUserData');
 
                         return {error:false, message:'User has been deleted.'};
