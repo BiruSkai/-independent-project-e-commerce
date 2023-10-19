@@ -4,7 +4,7 @@ const paymentQuery = new Queries(querySchema);
 
 const cardValidation = async(req, res) => {
         const userId = req.session.user.id;
-        const {method,creditCardNumber} = req.body;
+        const {method, creditCardNumber} = req.body;
         // console.log(`payment.js`, userId, method, creditCardNumber);
 
         querySchema.paymentDetail = {userId, method, creditCardNumber};
