@@ -7,13 +7,13 @@ info:
     email: 1nikolaus.albert1@gmail.com
     name: Nikolaus Albert
 paths:
-  /admin/{query}:
+  /admin/{params}:
     get:
       summary: Get all users's detail from a related table
       description: only for platform staff
       operationId: admin_query
       parameters:
-      - name: query
+      - name: params
         in: path
         description: filled with "user_data" || "user_address"
         required: true
@@ -58,7 +58,7 @@ paths:
             application/json:
               examples:
                 Failed response:
-                  value: error, your query {query}
+                  value: error, your query {params}
       tags:
         - admin
   
