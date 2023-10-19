@@ -51,9 +51,9 @@ productCategoryRouter.get('/:productName',  productInfo);
 
 const cartRouter = express.Router();
 cartRouter.get('/initCart', checkIfAuthenticated, initializeCart);
-cartRouter.get('/cartPreview', checkIfAuthenticated, cartPreview);
 cartRouter.post('/chooseProducts', checkIfAuthenticated, chosenProduct);
-cartRouter.delete('/chooseProducts', checkIfAuthenticated, deleteChosenProduct);
+cartRouter.delete('/chooseProducts/delete', checkIfAuthenticated, deleteChosenProduct);
+cartRouter.get('/cartPreview', checkIfAuthenticated, cartPreview);
 cartRouter.post('/checkoutCart', checkIfAuthenticated, checkoutCart);
 
 module.exports = {

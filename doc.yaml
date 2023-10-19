@@ -508,70 +508,171 @@ paths:
       tags:
         - productCategories
       
-  /users/{id}/cart:
-    parameters:
-      - in: path
-        name: id
-        description: id of a user
-        schema:
-          type: string
-        required: true
-    
+  /cart/initcart:
     get:
-      summary: Get cart details of a user
-      description: ''
-      operationId: get_cart
+      summary: Initialize a cart
+      description: for ordering product, previewing cart and payment
+      operationId: get_initCart
       responses:
         '200':
           description: Success
           content:
+            application/json:
+              examples:
+                success resposnse:
+                  value:
+                      Cart initialized. Enjoy your shopping.
+          
+        '400':
+          description: Failed
+          content:
             text/plain; charset=utf-8:
               examples:
-                Message:
-                  value: Success
+                failed response:
+                  value: err
       tags:
         - cart
         
-  /users/{id}/history:
-    parameters:
-      - in: path
-        name: id
-        description: id of a user
-        schema:
-          type: string
+  /cart/chooseProducts:
+    post:
+      summary: Put product order to a cart
+      operationId: get_chooseProducts
+      requestBody:
+        description: contain product_id, quantity
         required: true
-        
-    get:
-      summary: Get successful history of trades from a user
-      description: ''
-      operationId: history_trades
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/chooseProducts'
       responses:
         '200':
           description: Success
           content:
+            application/json:
+              examples:
+                success resposnse:
+                  value:
+                      3 Xi s4 added to cart and cost $900
+          
+        '400':
+          description: Failed
+          content:
             text/plain; charset=utf-8:
               examples:
-                Option 1:
-                  value: 
+                failed response 1:
+                  value: Init the cart first before shopping.
+                failed response 2:
+                  value: Product id not found.
+                failed response 3:
+                  value: Merchant has only 197 unit(s). Please modify your unit query.
+                failed response 4:
+                  value: err
+      tags:
+        - cart
+        
+  /cart/chooseProducts/delete:
+    delete:
+      parameters:
+        - in: query
+          name: product_id
+          schema:
+            type: integer
+          required: true
+      summary: delete chosen product order in cart
+      operationId: delete_productOrder
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                success resposnse:
+                  value:
+                     The product has been deleted from your cart.
+          
+        '400':
+          description: Failed
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                failed response:
+                  value: err
+      tags:
+        - cart
+        
+  /cart/cartPreview:
+    get:
+      summary: Preview a cart
+      description: for previewing order product before payment
+      operationId: get_cartPreview
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                success resposnse:
+                  value:
                     [
-                      {
-                          "user_id": 5,
-                          "order_id": 1,
-                          "created_on": "2023-09-26T12:06:49.029898",
-                          "payment": "successful"
-                      },
-                      {
-                          "user_id": 5,
-                          "order_id": 6,
-                          "created_on": "2023-09-29T12:34:25.12761",
-                          "payment": "successful"
-                      }
-                  ]
-                Option 2:
-                  value: No history trade
+                      [
+                          {
+                              "product_name": "Xi s4",
+                              "quantity": 3,
+                              "price_unit": "300",
+                              "total_cost": "900"
+                          }
+                      ],
+                      "Total cost of all items: $900. Proceed to checkout cart for payment."
+                    ]
+          
+        '400':
+          description: Failed
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                failed response:
+                  value: err
       tags:
         - cart
         
+  /cart/checkoutCart:
+    post:
+      summary: Paying the product order in a cart
+      operationId: post_checkoutCart
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/checkoutCart'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              examples:
+                success resposnse:
+                  value:
+                      Thanks for the order and payment. Your order is in process.\n
+                      Uninitializing cart successful.
+          
+        '400':
+          description: Failed
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                failed response 1:
+                  value: Please add first your credit card.
+                failed response 2:
+                  value: Accepted payment method credit card, bank transfer, paypal.
+                failed response 3:
+                  value: Set "pay_now:true" in JSON format to purchase your order.
+                failed response 4:
+                  value: err
+      tags:
+        - cart
+      
 components:
   schemas:
     Login:
@@ -633,4 +734,22 @@ components:
           type: string
         creditCardNumber:
           type: number
+    chooseProducts:
+      type: object
+      properties:
+        product_id:
+          type: integer
+        quantity:
+          type: integer
+    checkoutCart:
+      type: object
+      properties:
+        payment_method:
+          type: string
+          enum: 
+            - credit cart
+            - bank transfer
+            - paypal
+        pay_now:
+          type: boolean
    

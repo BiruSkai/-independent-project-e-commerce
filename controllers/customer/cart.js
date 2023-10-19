@@ -69,7 +69,7 @@ const cartPreview = async(req,res) => {
         cartQuery.cartPreviewFromSchema()
         .then(data => {
                 if(!data.error){
-                        res.status(200).send([data.data,`Total cost of all items: $${data.data2}. Proceed to checkout cart for payment.`]);
+                        res.send([data.data,`Total cost of all items: $${data.data2}. Proceed to checkout cart for payment.`]);
 
                         // console.log(data);
                         return data;
@@ -82,10 +82,10 @@ const cartPreview = async(req,res) => {
 const checkoutCart = async(req,res) => {
         const {payment_method,pay_now} = req.body;
         const {id} = req.session.user;
-        console.log(`userId-payment_method-pay_now: ${id}-${payment_method}-${pay_now}`);
+        // console.log(`userId-payment_method-pay_now: ${id}-${payment_method}-${pay_now}`);
 
         querySchema.cartDetail = {id, payment_method, pay_now};
-        console.log(querySchema);
+        // console.log(querySchema);
 
         cartQuery.checkoutCartFromSchema()
         .then(data => {

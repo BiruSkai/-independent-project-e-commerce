@@ -169,14 +169,11 @@ class Queries {
                 const initializeId = this.schema.cartDetail.id;
                 // console.log(`initializeId in Schema: ${initializeId}`);
 
-                try {
-                        
-                        // console.log('try')
+                try {              
                         // Insert InitializeId to initialize_cart
                         const initiate = await pool.query(
                                 `INSERT INTO initialize_cart(session_user_id, created_on)
                                 VALUES(${initializeId}, NOW())`);
-                        console.log(`After initiate`);
 
                         return {error:false, message: 'Cart initialized. Enjoy your shopping.'};
                        
@@ -261,12 +258,12 @@ class Queries {
                                 );
                         
                         let data = cartPreview.rows;
-                        console.log(data);
+                        // console.log(data);
 
                         let sum = Number(0);
 
                         let allCost = data.forEach(e => sum += Number(e.total_cost))
-                        console.log(`allCost: ${sum}`);
+                        // console.log(`allCost: ${sum}`);
 
                         return {error: false, data:data, data2:sum};
                        
@@ -363,22 +360,36 @@ class Queries {
                                         `SELECT method, card_number FROM payment WHERE user_id=${id}`
                                 );
 
-                                // console.log(checkCardAvailability);
+                                // console.log(checkCardAvailability.rows[0]);
 
-                                const method = checkCardAvailability.rows[0].method;
+                                if(checkCardAvailability.rows[0] == undefined) {
 
-                                const cardNumber = checkCardAvailability.rows[0].card_number;
-                                const regexCardNumber = /[0-9](?=[0-9]{4})/g;
-                                const displayCardNumber = cardNumber.replace(regexCardNumber, '*');
+                                        return {error:true, message:'Please add first your credit card.'};
+                                } else {
 
-                                return {method:method, display:displayCardNumber};
+                                        const method = checkCardAvailability.rows[0].method;
+                                        const cardNumber = checkCardAvailability.rows[0].card_number;
+
+                                        const regexCardNumber = /[0-9](?=[0-9]{4})/g;
+                                        const displayCardNumber = cardNumber.replace(regexCardNumber, '*');
+                                       
+                                        return {error:false, method:method, display:displayCardNumber};
+                                };
                 };                
                         
 
                 let checkpayment;
                 switch(payment_method) {
                         case 'credit card':
-                                checkpayment = await checkCardAvailability().then(data => data);
+                                checkpayment = await checkCardAvailability().then(data => {
+                                        
+                                        if(!data.error) {
+                                                // console.log(data)
+                                                return data;
+                                        } else {
+                                                return {error:data.error, message:data.message};
+                                        }
+                                });
                                 break;
                         case 'bank transfer':
                                 checkpayment = 'bank transfer';  
@@ -390,40 +401,47 @@ class Queries {
                                 return {error:true, message: 'Accepted payment method: credit card, bank transfer, paypal.'}
                 };
 
-                let payment = () => {
-                        if(typeof(checkpayment) === 'object') {
-                                return {credit_card:checkpayment.method, number:checkpayment.display};
-                        } return checkpayment;
+                // console.log('checkpayment', checkpayment);
+                
+                if (checkpayment.error) {
+                        return checkpayment;
+                } else {
+                        let payment = () => {
+                                if(typeof(checkpayment) === 'object') {
+                                        return {credit_card:checkpayment.method, number:checkpayment.display};
+                                
+                                } return checkpayment;
+                        };
+
+                        //Promise the the asked method
+                        const checkPreviewCart = await this.cartPreviewFromSchema()
+                                .then(data => {
+                                        if(!data.error) {
+                                                return {orderList: data.data, total_cost: data.data2};
+                                        } return;
+                                });
+                        // console.log('after chaining method: ', checkPreviewCart); 
+                
+                        payment = JSON.stringify(payment());
+                        // console.log(payment);
+
+                        let textTradeHistory = JSON.stringify(checkPreviewCart); 
+                        // console.log(textTradeHistory);
+
+                        if(pay_now) {
+                                try {   
+                                        const insertTradeHistory = await pool.query(
+                                                `INSERT INTO checkout_cart(payment_date, trade_history, user_id, currency, payment_method, status)
+                                                VALUES(NOW(), '${textTradeHistory}', ${id},'usd', '${payment}', 'successful')`
+                                                );         
+                                        // console.log('post insertTradeHistory Schema')
+                                        return{error:false}; 
+
+                                } catch(err) {
+                                        return{error:false, message:err};
+                                }
+                        } return {error:false, message: 'Set "pay_now:true" in JSON format to purchase your order.'};
                 };
-
-                //Promise the the asked method
-                const checkPreviewCart = await this.cartPreviewFromSchema()
-                        .then(data => {
-                                if(!data.error) {
-                                        return {orderList: data.data, total_cost: data.data2};
-                                } return;
-                        });
-                // console.log('after chaining method: ', checkPreviewCart); 
-          
-                payment = JSON.stringify(payment());
-                // console.log(payment);
-
-                let textTradeHistory = JSON.stringify(checkPreviewCart); 
-                // console.log(textTradeHistory);
-
-                if(pay_now) {
-                        try {   
-                                const insertTradeHistory = await pool.query(
-                                        `INSERT INTO checkout_cart(payment_date, trade_history, user_id, currency, payment_method, status)
-                                         VALUES(NOW(), '${textTradeHistory}', ${id},'usd', '${payment}', 'successful')`
-                                         );         
-                                console.log('post insertTradeHistory Schema')
-                                return{error:false}; 
-
-                        } catch(err) {
-                                return{error:false, message:err};
-                        }
-                } return {error:false, message: 'Set "pay_now:true" in JSON format to purchase your order.'}
         };                 
 
         async UninitializedCartFromSchema () {
